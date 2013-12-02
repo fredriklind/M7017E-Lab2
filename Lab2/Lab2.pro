@@ -18,3 +18,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
+
+mac: LIBS += -F/Library/Frameworks/ -framework GStreamer
+mac: INCLUDEPATH += /Library/Frameworks/GStreamer.framework/Headers
+mac: DEPENDPATH += /Library/Frameworks/GStreamer.framework/Headers
