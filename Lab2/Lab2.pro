@@ -21,6 +21,10 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += gstreamer-0.10
+unix: PKGCONFIG += gstreamer-interfaces-0.10
+
 mac: LIBS += -F/Library/Frameworks/ -framework GStreamer
 mac: INCLUDEPATH += /Library/Frameworks/GStreamer.framework/Headers
 mac: DEPENDPATH += /Library/Frameworks/GStreamer.framework/Headers
