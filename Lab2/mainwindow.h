@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "server.h"
+#include "client.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,10 +18,15 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_playButton_clicked();
+    void serverDidReceiveMessage(QString);
+    void on_sendButton_clicked();
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
+    Server *server;
+    Client *client;
 };
 
 #endif // MAINWINDOW_H
