@@ -22,8 +22,10 @@ void MainWindow::on_playButton_clicked()
     gst_init (NULL, NULL);
     GError *err = NULL;
 
+    //pipeline = gst_parse_launch ("v4l2src ! video/x-raw-yuv, width=320,height=240,framerate=10/1 ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! udpsink host=130.240.110.34 port=5000", &r);
+
     video = gst_parse_launch("udpsrc port=5000 ! smokedec ! ffmpegcolorspace ! autovideosink ! xvimagesink", &err);
-    qDebug() << err->message;
+    //qDebug() << err->message;
     gst_element_set_state (video, GST_STATE_PLAYING);
 
     if(GST_IS_X_OVERLAY(video)){
