@@ -5,28 +5,16 @@
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->videocontainer->hide();
-
-    server = new Server(this);
-    server->listen();
 
     client = new Client(this);
-    client->connectToServer();
-
-    connect(server, SIGNAL(didReceiveMessage(QString)), this, SLOT(serverDidReceiveMessage(QString)));
 }
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
 
 void MainWindow::serverDidReceiveMessage(QString str)
 {
@@ -34,24 +22,16 @@ void MainWindow::serverDidReceiveMessage(QString str)
     QJsonObject obj = QJsonDocument::fromJson(ba).object();
     QVariantMap arr = obj.toVariantMap();
 
-    qDebug() << arr["command"].toString();
 
-    // Convert to prettficated JSON qDebug() << QJsonDocument::fromVariant(arr).toJson();
+    qDebug() << QJsonDocument::fromVariant(arr).toJson();
+
+    QMessageBox Msgbox;
+    Msgbox.setText("Got this shit: "+ arr["message"].toString());
+    Msgbox.exec();
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    QVariantMap arr;
-    arr["command"] = "Testar lite";
-    arr["Tjoho"] = "Horerier";
-    client->sendMessage(arr);
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-
-}
-
+// Gst stuff
+/*
 void MainWindow::on_sendButton_clicked()
 {
     GstElement *video;
@@ -69,4 +49,25 @@ void MainWindow::on_sendButton_clicked()
     } else {
         qDebug() << "Video is not an x-voersalsdak thing";
     }
+}*/
+
+void MainWindow::on_sendButton_clicked()
+{
+    //while(true){ if(client->isConnected) break;}
+    QVariantMap arr;
+    arr["message"] = ui->messageField->text();
+    arr["Other non-related stuff"] = "Booyah";
+    client->sendMessage(arr);
+}
+
+void MainWindow::on_listenButton_clicked()
+{
+    server = new Server(this);
+    server->listen();
+    connect(server, SIGNAL(didReceiveMessage(QString)), this, SLOT(serverDidReceiveMessage(QString)));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
 }

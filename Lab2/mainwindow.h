@@ -20,8 +20,7 @@ public:
 private slots:
     void serverDidReceiveMessage(QString);
     void on_sendButton_clicked();
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
+    void on_listenButton_clicked();
 
 private:
     Ui::MainWindow *ui;

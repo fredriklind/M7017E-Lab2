@@ -18,7 +18,6 @@ void Server::listen()
 {
     server->listen(QHostAddress::LocalHost, 5000);
     qDebug() << "Listening...";
-    //qDebug() << (int)socket->state();
 }
 
 void Server::on_newConnection()
@@ -44,9 +43,28 @@ void Server::on_readyRead()
             socket->disconnectFromHost();
             break;
         }
+
+        //To QString
         QString str(ba);
         ba.chop(1);
-        emit didReceiveMessage(str);
+
+        // To JSON ojbect
+        QByteArray ba2(str.toStdString().c_str());
+        QJsonObject obj = QJsonDocument::fromJson(ba2).object();
+        QVariantMap arr = obj.toVariantMap();
+
+        // Add sender
+        arr["sender-ip"] = socket->peerAddress().toString();
+        arr["sender-name"] = socket->peerName();
+        arr["sender-port"] = QString::number(socket->peerPort());
+
+        // Back to QString
+        QJsonObject obj2 = QJsonObject::fromVariantMap(arr);
+        QJsonDocument doc;
+        doc.setObject(obj2);
+        QString str2(doc.toJson(QJsonDocument::Compact));
+
+        emit didReceiveMessage(str2);
     }
 }
 

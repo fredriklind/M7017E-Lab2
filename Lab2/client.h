@@ -14,12 +14,14 @@ public:
     void connectToServer();
     void sendMessage(QVariantMap);
     bool isConnected;
+    QVariantMap messageBuffer;
 signals:
 
 public slots:
     void on_connected();
 private:
     QTcpSocket* socket;
+    void internalSendMessage();
 };
 
 #endif // CLIENT_H
