@@ -14,6 +14,7 @@ Client::Client(QObject *parent) :
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(connected()),
             this, SLOT(on_connected()));
+    isConnected = false;
 }
 
 void Client::on_connected()

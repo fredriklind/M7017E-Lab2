@@ -21,6 +21,8 @@ private slots:
     void serverDidReceiveMessage(QString);
     void on_sendButton_clicked();
     void on_listenButton_clicked();
+    void on_gst1_clicked();
+    void on_gst2_clicked();
 
 private:
     Ui::MainWindow *ui;

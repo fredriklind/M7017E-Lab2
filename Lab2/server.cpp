@@ -16,7 +16,7 @@ Server::Server(QObject *parent) :
 
 void Server::listen()
 {
-    server->listen(QHostAddress::LocalHost, 5000);
+    server->listen(QHostAddress::Any, 5000);
     qDebug() << "Listening...";
 }
 

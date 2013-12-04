@@ -40,6 +40,8 @@ public:
     QLineEdit *messageField;
     QPushButton *sendButton;
     QPushButton *listenButton;
+    QPushButton *gst1;
+    QPushButton *gst2;
     QSpacerItem *horizontalSpacer;
     QStatusBar *statusBar;
     QMenuBar *menu;
@@ -106,6 +108,16 @@ public:
 
         horizontalLayout->addWidget(listenButton);
 
+        gst1 = new QPushButton(centralWidget);
+        gst1->setObjectName(QStringLiteral("gst1"));
+
+        horizontalLayout->addWidget(gst1);
+
+        gst2 = new QPushButton(centralWidget);
+        gst2->setObjectName(QStringLiteral("gst2"));
+
+        horizontalLayout->addWidget(gst2);
+
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer);
@@ -135,6 +147,8 @@ public:
         label_2->setText(QApplication::translate("MainWindow", "Message:", 0));
         sendButton->setText(QApplication::translate("MainWindow", "Send", 0));
         listenButton->setText(QApplication::translate("MainWindow", "Turn on linstening", 0));
+        gst1->setText(QApplication::translate("MainWindow", "Gst-send", 0));
+        gst2->setText(QApplication::translate("MainWindow", "Gst-rereive", 0));
     } // retranslateUi
 
 };

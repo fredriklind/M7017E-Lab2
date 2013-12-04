@@ -31,27 +31,6 @@ void MainWindow::serverDidReceiveMessage(QString str)
     Msgbox.exec();
 }
 
-// Gst stuff
-/*
-void MainWindow::on_sendButton_clicked()
-{
-    GstElement *video;
-    gst_init (NULL, NULL);
-    GError *err = NULL;
-
-    //video = gst_parse_launch ("autovideosrc ! video/x-raw-yuv, width=320,height=240,framerate=10/1 ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! udpsink host=127.0.0.1 port=5000", &err);
-
-    video = gst_parse_launch("udpsrc port=5000 ! smokedec ! ffmpegcolorspace ! autovideosink ! xvimagesink", &err);
-    //qDebug() << err->message;
-    gst_element_set_state (video, GST_STATE_PLAYING);
-
-    if(GST_IS_X_OVERLAY(video)){
-        gst_x_overlay_set_window_handle(GST_X_OVERLAY(video),ui->videocontainer->winId());
-    } else {
-        qDebug() << "Video is not an x-voersalsdak thing";
-    }
-}*/
-
 void MainWindow::on_sendButton_clicked()
 {
     //while(true){ if(client->isConnected) break;}
@@ -73,3 +52,31 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_gst1_clicked()
+{
+    GstElement *video;
+    gst_init (NULL, NULL);
+    GError *err = NULL;
+    video = gst_parse_launch ("autovideosrc ! video/x-raw-yuv, width=320,height=240,framerate=10/1 ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! udpsink host=127.0.0.1 port=5000", &err);
+    gst_element_set_state (video, GST_STATE_PLAYING);
+}
+
+void MainWindow::on_gst2_clicked()
+{
+
+    GstElement *video;
+    gst_init (NULL, NULL);
+    GError *err = NULL;
+    video = gst_parse_launch("udpsrc port=5000 ! smokedec ! ffmpegcolorspace ! autovideosink ! xvimagesink", &err);
+    //qDebug() << err->message;
+    gst_element_set_state (video, GST_STATE_PLAYING);
+}
+
+
+// For later
+/*if(GST_IS_X_OVERLAY(video)){
+    gst_x_overlay_set_window_handle(GST_X_OVERLAY(video),ui->videocontainer->winId());
+} else {
+    qDebug() << "Video is not an x-voersalsdak thing";
+}*/
