@@ -6,6 +6,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#define LISTEN_IP 5000
+
 Client::Client(QObject *parent) :
     QObject(parent)
 {
@@ -20,15 +22,15 @@ void Client::on_connected()
     internalSendMessage();
 }
 
-void Client::sendMessage(QVariantMap arr)
+void Client::sendMessage(QVariantMap arr, QHostAddress ip)
 {
+    messageBuffer = arr;
+
     if(isConnected){
-        messageBuffer = arr;
         internalSendMessage();
 
     } else {
-        messageBuffer = arr;
-        connectToServer();
+        connectToServer(ip);
     }
 }
 
@@ -48,7 +50,7 @@ void Client::internalSendMessage(){
     }
 }
 
-void Client::connectToServer()
+void Client::connectToServer(QHostAddress ip)
 {
-    if(!isConnected) socket->connectToHost(QHostAddress::LocalHost, 5000);
+    if(!isConnected) socket->connectToHost(ip, LISTEN_IP);
 }

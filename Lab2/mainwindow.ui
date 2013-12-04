@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>687</width>
+    <width>627</width>
     <height>96</height>
    </rect>
   </property>
@@ -61,9 +61,23 @@
        </spacer>
       </item>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>IP Addres:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="ipField">
+        <property name="text">
+         <string>127.0.0.1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Message</string>
+         <string>Message:</string>
         </property>
        </widget>
       </item>
@@ -92,13 +106,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="outputLabel">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -121,7 +128,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>687</width>
+     <width>627</width>
      <height>22</height>
     </rect>
    </property>

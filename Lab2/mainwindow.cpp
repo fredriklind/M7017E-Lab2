@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QHostAddress>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -57,7 +58,8 @@ void MainWindow::on_sendButton_clicked()
     QVariantMap arr;
     arr["message"] = ui->messageField->text();
     arr["Other non-related stuff"] = "Booyah";
-    client->sendMessage(arr);
+    QHostAddress ip(ui->ipField->text());
+    client->sendMessage(arr, ip);
 }
 
 void MainWindow::on_listenButton_clicked()

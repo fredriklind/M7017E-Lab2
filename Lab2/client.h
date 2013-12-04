@@ -11,8 +11,8 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
-    void connectToServer();
-    void sendMessage(QVariantMap);
+    void connectToServer(QHostAddress);
+    void sendMessage(QVariantMap, QHostAddress);
     bool isConnected;
     QVariantMap messageBuffer;
 signals:
