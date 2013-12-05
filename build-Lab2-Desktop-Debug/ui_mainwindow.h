@@ -43,6 +43,7 @@ public:
     QPushButton *gst1;
     QPushButton *gst2;
     QPushButton *pushButton;
+    QPushButton *change_overlay;
     QSpacerItem *horizontalSpacer;
     QStatusBar *statusBar;
     QMenuBar *menu;
@@ -124,6 +125,11 @@ public:
 
         horizontalLayout->addWidget(pushButton);
 
+        change_overlay = new QPushButton(centralWidget);
+        change_overlay->setObjectName(QStringLiteral("change_overlay"));
+
+        horizontalLayout->addWidget(change_overlay);
+
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer);
@@ -156,6 +162,7 @@ public:
         gst1->setText(QApplication::translate("MainWindow", "Gst-send", 0));
         gst2->setText(QApplication::translate("MainWindow", "Gst-rereive!", 0));
         pushButton->setText(QApplication::translate("MainWindow", "BAM", 0));
+        change_overlay->setText(QApplication::translate("MainWindow", "Change", 0));
     } // retranslateUi
 
 };

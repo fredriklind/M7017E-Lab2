@@ -76,7 +76,7 @@ void MainWindow::on_gst2_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     GstElement *pipeline;
-    GstElement *source, *overlay, *sink;
+    GstElement *source, *sink, *smokeenc, *ffmpegcolorspace, *udpsink;
     /* init */
     gst_init (NULL, NULL);
 
@@ -86,38 +86,33 @@ void MainWindow::on_pushButton_clicked()
 
 
     /* create elements */
-    source = gst_element_factory_make ("autovideosrc", "source");
-    overlay = gst_element_factory_make("textoverlay", "overlay");
-    sink = gst_element_factory_make ("autovideosink", "sink");
+    source = gst_element_factory_make ("autovideosrc", NULL);
+    overlay = gst_element_factory_make("textoverlay", NULL);
+    sink = gst_element_factory_make ("autovideosink", NULL);
+
+    smokeenc = gst_element_factory_make ("smokeenc", NULL);
+    ffmpegcolorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
+    udpsink = gst_element_factory_make("multiudpsink", NULL);
 
     // Set attributes
     g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","CAM1", "valign","top", "halign","left", "shaded-background", true, NULL);
     gst_bin_add_many (GST_BIN (pipeline), source, overlay, sink, NULL);
 
-
-    // Get pads
-    //GstPad *autovideosrc_src, *textoverlay_video_sink, *textoverlay_src, *autovideosink_src;
-
-   /* autovideosrc_src = gst_element_get_static_pad(source, "src");
-    textoverlay_video_sink = gst_element_get_static_pad(overlay, "video-sink");
-    textoverlay_src = gst_element_get_static_pad(overlay, "src");
-    autovideosink_src = gst_element_get_static_pad(sink, "src");*/
-
-    gst_element_link_pads(source, "src", overlay, "video-sink");
-    gst_element_link_pads(overlay, "src", sink, "sink");
+    g_object_set(G_OBJECT(smokeenc), "keyframe", 8, "qmax", 40, NULL);
+    g_object_set(G_OBJECT(udpsink), "clients", "130.240.93.175:6000", NULL);
 
     // Link pads
-    //gst_pad_link(autovideosrc_src, textoverlay_video_sink);
+    gst_element_link_pads(source, "src", overlay, "video_sink");
+    gst_element_link_pads(overlay, "src", sink, "sink");
 
+    gst_element_link_pads(overlay, "src", smokeenc, "sink");
+    gst_element_link_pads(smokeenc, "src", ffmpegcolorspace, "sink");
+    gst_element_link_pads(ffmpegcolorspace, "src", udpsink, "sink");
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
-    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_, "pipeline");
+    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_MEDIA_TYPE, "pipeline");
     //g_object_set(G_OBJECT(), "port", "6000", NULL);
 }
-
-
-
-
 
 // For later
 /*if(GST_IS_X_OVERLAY(video)){
@@ -126,3 +121,10 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << "Video is not an x-voersalsdak thing";
 }*/
 
+
+void MainWindow::on_change_overlay_clicked()
+{
+    const char* str = ui->messageField->text().toUtf8();
+    g_object_set(G_OBJECT(overlay), "text", str, NULL);
+
+}
