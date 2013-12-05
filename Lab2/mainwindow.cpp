@@ -27,7 +27,7 @@ void MainWindow::serverDidReceiveMessage(QString str)
     qDebug() << QJsonDocument::fromVariant(arr).toJson();
 
     QMessageBox Msgbox;
-    Msgbox.setText("Got this shit: "+ arr["message"].toString());
+    Msgbox.setText("Got this bajs,shit,pop: "+ arr["message"].toString());
     Msgbox.exec();
 }
 
@@ -58,7 +58,7 @@ void MainWindow::on_gst1_clicked()
     GstElement *video;
     gst_init (NULL, NULL);
     GError *err = NULL;
-    video = gst_parse_launch ("autovideosrc ! video/x-raw-yuv, width=320,height=240,framerate=10/1 ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! udpsink host=127.0.0.1 port=5000", &err);
+    video = gst_parse_launch ("autovideosrc ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! multiudpsink clients=\"130.240.94.92:5000\"", &err);
     gst_element_set_state (video, GST_STATE_PLAYING);
 }
 
@@ -68,10 +68,45 @@ void MainWindow::on_gst2_clicked()
     GstElement *video;
     gst_init (NULL, NULL);
     GError *err = NULL;
-    video = gst_parse_launch("udpsrc port=5000 ! smokedec ! ffmpegcolorspace ! autovideosink ! xvimagesink", &err);
+    video = gst_parse_launch("udpsrc port=6000 ! smokedec ! ffmpegcolorspace ! autovideosink", &err);
     //qDebug() << err->message;
     gst_element_set_state (video, GST_STATE_PLAYING);
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    GstElement *pipeline;
+    GstElement *source, *overlay, *sink;
+    /* init */
+    gst_init (NULL, NULL);
+
+    /* create pipeline */
+    pipeline = gst_pipeline_new ("my-pipeline");
+
+
+
+    /* create elements */
+    source = gst_element_factory_make ("autovideosrc", "source");
+    overlay = gst_element_factory_make("textoverlay", "overlay");
+    sink = gst_element_factory_make ("autovideosink", "sink");
+
+    // Set attributes
+    g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","CAM1", "valign","top", "halign","left", "shaded-background", true, NULL);
+
+
+    gst_bin_add_many (GST_BIN (pipeline), source, overlay, sink, NULL);
+
+    if (!gst_element_link_many (source, overlay, sink, NULL)) {
+        qDebug() << "Could not link elements";
+    }
+
+    gst_element_set_state (pipeline, GST_STATE_PLAYING);
+    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "/afs/ltu.se/students/e/f/efiiln-0/M7017E-Lab2/dot-files/pipeline.dot");
+    //g_object_set(G_OBJECT(), "port", "6000", NULL);
+}
+
+
+
 
 
 // For later
@@ -80,3 +115,4 @@ void MainWindow::on_gst2_clicked()
 } else {
     qDebug() << "Video is not an x-voersalsdak thing";
 }*/
+

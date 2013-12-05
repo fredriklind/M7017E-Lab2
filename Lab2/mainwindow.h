@@ -24,6 +24,8 @@ private slots:
     void on_gst1_clicked();
     void on_gst2_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     Server *server;

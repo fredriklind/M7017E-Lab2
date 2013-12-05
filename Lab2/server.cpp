@@ -62,7 +62,7 @@ void Server::on_readyRead()
         QJsonObject obj2 = QJsonObject::fromVariantMap(arr);
         QJsonDocument doc;
         doc.setObject(obj2);
-        QString str2(doc.toJson(QJsonDocument::Compact));
+        QString str2(doc.toJson());
 
         emit didReceiveMessage(str2);
     }

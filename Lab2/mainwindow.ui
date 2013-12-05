@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>627</width>
+    <width>907</width>
     <height>96</height>
    </rect>
   </property>
@@ -120,6 +120,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>BAM</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -142,8 +149,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>627</width>
-     <height>22</height>
+     <width>907</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

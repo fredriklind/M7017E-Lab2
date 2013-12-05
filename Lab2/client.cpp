@@ -42,7 +42,7 @@ void Client::internalSendMessage(){
         QJsonDocument doc;
         QJsonObject obj = QJsonObject::fromVariantMap(arr);
         doc.setObject(obj);
-        QString message(doc.toJson(QJsonDocument::Compact));
+        QString message(doc.toJson());
 
         // Send string!
         QString data = message + "\n";

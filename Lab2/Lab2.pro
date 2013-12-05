@@ -28,6 +28,7 @@ FORMS    += mainwindow.ui
 unix:!macx: CONFIG += link_pkgconfig
 unix:!macx: PKGCONFIG += gstreamer-0.10
 unix:!macx: PKGCONFIG += gstreamer-interfaces-0.10
+unix:!macx: INCLUDEPATH += /usr/include/gstreamer-0.10
 
 mac: LIBS += -F/Library/Frameworks/ -framework GStreamer
 mac: INCLUDEPATH += /Library/Frameworks/GStreamer.framework/Headers
