@@ -16,8 +16,15 @@ Server::Server(QObject *parent) :
 
 void Server::listen()
 {
-    server->listen(QHostAddress::Any, 5000);
-    qDebug() << "Listening...";
+    if(server->listen(QHostAddress::Any,5000))
+    {
+        qDebug() << "Server listening";
+    }
+    else
+    {
+        qDebug() << "Couldn't listen to port" << server->serverPort() << ":" << server->errorString();
+
+    }
 }
 
 void Server::on_newConnection()
@@ -35,14 +42,18 @@ void Server::on_newConnection()
 
 void Server::on_readyRead()
 {
-    while(socket->canReadLine())
+    /*while(socket->canReadLine())
     {
         QByteArray ba = socket->readLine();
         if(strcmp(ba.constData(), "\n") == 0)
         {
             socket->disconnectFromHost();
             break;
-        }
+        }*/
+
+        qDebug()<<socket->readBufferSize();
+        // note that QByteArray can be casted to char * and const char *
+        QByteArray ba = socket->readAll();
 
         //To QString
         QString str(ba);
@@ -64,7 +75,7 @@ void Server::on_readyRead()
         QString str2(doc.toJson().replace("\n",""));
 
         emit didReceiveMessage(str2);
-    }
+    //}
 }
 
 void Server::on_disconnected()

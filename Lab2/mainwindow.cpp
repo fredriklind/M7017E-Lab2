@@ -20,12 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::serverDidReceiveMessage(QString str)
 {
+    qDebug() << str;
     QByteArray ba(str.toStdString().c_str());
     QJsonObject obj = QJsonDocument::fromJson(ba).object();
     QVariantMap arr = obj.toVariantMap();
 
 
-    qDebug() << QJsonDocument::fromVariant(arr).toJson();
+    //qDebug() << QJsonDocument::fromVariant(arr).toJson();
 
     QMessageBox Msgbox;
     Msgbox.setText("Got this bajs,shit,pop: "+ arr["message"].toString());
@@ -53,15 +54,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_gst1_clicked()
-{
-    GstElement *video;
-    gst_init (NULL, NULL);
-    GError *err = NULL;
-    video = gst_parse_launch ("autovideosrc ! ffmpegcolorspace ! smokeenc keyframe=8 qmax=40 ! multiudpsink clients=\"130.240.94.92:5000\"", &err);
-    gst_element_set_state (video, GST_STATE_PLAYING);
-}
-
 void MainWindow::on_gst2_clicked()
 {
 
@@ -75,13 +67,7 @@ void MainWindow::on_gst2_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    VideoServer server(this);
-}
-
-void MainWindow::on_change_overlay_clicked()
-{
-
-
+    videoServer = new VideoServer(this);
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
@@ -90,9 +76,9 @@ void MainWindow::on_messageField_textChanged(const QString &arg1)
     //g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }
 
-
 // Add client
 void MainWindow::on_pushButton_2_clicked()
 {
-
+    QHostAddress ip(ui->ipField->text());
+    videoServer->addNewClient(ip);
 }

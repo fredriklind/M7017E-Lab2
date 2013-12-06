@@ -5,6 +5,8 @@
 #include "server.h"
 #include "client.h"
 #include <gst/gst.h>
+#include "videoserver.h"
+//#include "videoclient.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,13 +24,8 @@ private slots:
     void serverDidReceiveMessage(QString);
     void on_sendButton_clicked();
     void on_listenButton_clicked();
-    void on_gst1_clicked();
     void on_gst2_clicked();
-
     void on_pushButton_clicked();
-
-    void on_change_overlay_clicked();
-
     void on_messageField_textChanged(const QString &arg1);
 
     void on_pushButton_2_clicked();
@@ -38,6 +35,7 @@ private:
     Server *server;
     Client *client;
     GstElement *overlay;
+    VideoServer *videoServer;
 };
 
 #endif // MAINWINDOW_H

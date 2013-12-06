@@ -11,9 +11,7 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
-    void connectToServer(QHostAddress);
     void sendMessage(QVariantMap, QHostAddress);
-    bool isConnected;
     QVariantMap messageBuffer;
 signals:
 
@@ -22,6 +20,7 @@ public slots:
 private:
     QTcpSocket* socket;
     void internalSendMessage();
+    void createNewSocket(QHostAddress);
 };
 
 #endif // CLIENT_H

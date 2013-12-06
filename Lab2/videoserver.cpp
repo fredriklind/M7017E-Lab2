@@ -2,6 +2,7 @@
 #include <gst/gst.h>
 
 #define LISTEN_PORT 5000
+#define CLIENT_RECEIVE_PORT 6002
 
 #define VIDEO_WIDTH 640
 #define VIDEO_HEIGHT 480
@@ -38,7 +39,7 @@ VideoServer::VideoServer(QObject *parent) :
     g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","Kamura 1", "valign","top", "halign","left", "shaded-background", true, NULL);
     g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
     g_object_set(G_OBJECT(encoder), "speed-preset", 1, "pass", 0, "quantizer", 20, "tune", "zerolatency", NULL);
-    g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.166:6000,130.240.93.175:6001", NULL);
+    //g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.175:6002", NULL);
 
     // Add everything to the pipeline
     gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, outboundSink, q1, q2, rtpPayloader, NULL);
@@ -52,11 +53,12 @@ VideoServer::VideoServer(QObject *parent) :
     pad2name = gst_pad_get_name (pad2);
 
 
-    // ------------- The mighty pipeline ------------- //
-    //
-    // Source --> Capsfilter --> Overlay --> Tee -->  Queue1 --> Sink
-    //                                          \
-    //                                           \--> Queue2 --> Encoder --> RTP-Payloader --> OutboundSink
+    /* ------------- The mighty pipeline ------------- //
+
+     Source --> Capsfilter --> Overlay --> Tee -->  Queue1 --> Sink
+                                              \
+                                               \--> Queue2 --> Encoder --> RTP-Payloader --> OutboundSink
+    */
 
     // Source -> Capsfilter
     gst_element_link_pads(source, "src", capsfilter, "sink");
@@ -87,4 +89,9 @@ VideoServer::VideoServer(QObject *parent) :
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
+}
+
+void VideoServer::addNewClient(QHostAddress ip)
+{
+    g_signal_emit_by_name(outboundSink, "add", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
 }

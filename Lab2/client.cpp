@@ -11,29 +11,27 @@
 Client::Client(QObject *parent) :
     QObject(parent)
 {
-    socket = new QTcpSocket(this);
-    connect(socket, SIGNAL(connected()),
-            this, SLOT(on_connected()));
-    isConnected = false;
     messageBuffer = QVariantMap();
 }
 
+void Client::createNewSocket(QHostAddress ip)
+{
+    socket = new QTcpSocket(this);
+    connect(socket, SIGNAL(connected()),
+            this, SLOT(on_connected()));
+    socket->connectToHost(ip, LISTEN_PORT);
+}
+
+
 void Client::on_connected()
 {
-    isConnected = true;
     internalSendMessage();
 }
 
 void Client::sendMessage(QVariantMap arr, QHostAddress ip)
 {
     messageBuffer = arr;
-
-    if(isConnected){
-        internalSendMessage();
-
-    } else {
-        connectToServer(ip);
-    }
+    createNewSocket(ip);
 }
 
 void Client::internalSendMessage(){
@@ -49,11 +47,8 @@ void Client::internalSendMessage(){
         QString data = message + "\n";
         socket->write(data.toStdString().c_str());
         socket->flush();
+        socket->disconnectFromHost();
+        socket->deleteLater();
         messageBuffer = QVariantMap();
     }
-}
-
-void Client::connectToServer(QHostAddress ip)
-{
-    if(!isConnected) socket->connectToHost(ip, LISTEN_PORT);
 }
