@@ -68,7 +68,7 @@ void MainWindow::on_gst2_clicked()
     GstElement *video;
     gst_init (NULL, NULL);
     GError *err = NULL;
-    video = gst_parse_launch("udpsrc port=6000 ! smokedec ! ffmpegcolorspace ! autovideosink", &err);
+    video = gst_parse_launch("udpsrc ! ffdec_h264 ! autovideosink", &err);
     //qDebug() << err->message;
     gst_element_set_state (video, GST_STATE_PLAYING);
 }
@@ -76,24 +76,22 @@ void MainWindow::on_gst2_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     GstElement *pipeline;
-    GstElement *source, *sink, *sink2, *capsfilter, *tee, *q1, *q2, *faceoverlay;
+    GstElement *source, *sink, *outboundSink, *capsfilter, *tee, *q1, *q2, *encoder, *rtpPayloader;
     GstCaps *caps;
-    /* init */
     gst_init (NULL, NULL);
-
-    /* create pipeline */
     pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
-    /* create elements */
+    // Create the elements
     source = gst_element_factory_make ("autovideosrc", NULL);
+    encoder = gst_element_factory_make ("x264enc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
     sink = gst_element_factory_make ("autovideosink", NULL);
-    sink2 = gst_element_factory_make ("autovideosink", NULL);
+    outboundSink = gst_element_factory_make ("multiudpsink", NULL);
     capsfilter = gst_element_factory_make ("capsfilter", NULL);
     tee = gst_element_factory_make("tee", NULL);
     q1 = gst_element_factory_make("queue", NULL);
     q2 = gst_element_factory_make("queue", NULL);
-    faceoverlay = gst_element_factory_make("faceoverlay", NULL);
+    rtpPayloader = gst_element_factory_make("rtph264pay", NULL);
 
     // Setup caps
     caps = gst_caps_new_simple ("video/x-raw-yuv",
@@ -102,14 +100,16 @@ void MainWindow::on_pushButton_clicked()
             "framerate", GST_TYPE_FRACTION, 30, 1,
             NULL);
 
-    // Set attributes
+    // Set some attributes
     g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","Kamura 1", "valign","top", "halign","left", "shaded-background", true, NULL);
-    //g_object_set(G_OBJECT(faceoverlay), "location", "/Users/fredriklind/face_mask.svg", NULL);
+    g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
+    g_object_set(G_OBJECT(encoder), "speed-preset", 1, "pass", "qual", "quantizer", 20, "tune", "zerolatency", NULL);
+    g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.166:6000,130.240.93.175:6001", NULL);
 
-    // Add to bin
-    gst_bin_add_many (GST_BIN (pipeline), source, capsfilter, tee, overlay, sink, sink2, q1, q2, faceoverlay, NULL);
+    // Add everything to the pipeline
+    gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, outboundSink, q1, q2, rtpPayloader, NULL);
 
-    // Custom linking
+    // Request 2 tee sink pads
     GstPad *pad1, *pad2;
     gchar *pad1name, *pad2name;
     pad1 = gst_element_get_request_pad (tee, "src%d");
@@ -117,26 +117,43 @@ void MainWindow::on_pushButton_clicked()
     pad2 = gst_element_get_request_pad (tee, "src%d");
     pad2name = gst_pad_get_name (pad2);
 
+
+    // ------------- The mighty pipeline ------------- //
+    //
+    // Source --> Capsfilter --> Overlay --> Tee -->  Queue1 --> Sink
+    //                                          \
+    //                                           \--> Queue2 --> Encoder --> RTP-Payloader --> OutboundSink
+
+
+    // Source -> Capsfilter
     gst_element_link_pads(source, "src", capsfilter, "sink");
 
-    //Text overlay
-    gst_element_link_pads (capsfilter, "src", overlay, "video_sink");
-    gst_element_link_pads (overlay, "src", tee, "sink");
+    // Capsfilter --> Overlay
+    gst_element_link_pads(capsfilter, "src", overlay, "video_sink");
 
-    // Face overlay
-    //gst_element_link_pads (capsfilter, "src", faceoverlay, "sink");
-    //gst_element_link_pads (faceoverlay, "src", tee, "sink");
+    // Overlay --> Tee
+    gst_element_link_pads(overlay, "src", tee, "sink");
 
-
+    // Tee --> Queue1
     gst_element_link_pads (tee, pad1name, q1, "sink");
+
+    // Tee --> Queue2
     gst_element_link_pads (tee, pad2name, q2, "sink");
 
-    gst_element_link_pads (q1, "src", sink, "sink");
-    gst_element_link_pads (q2, "src", sink2, "sink");
+    // Queue1 --> Sink
+    gst_element_link_pads(q1, "src", sink, "sink");
+
+    // Queue2 --> Encoder
+    gst_element_link_pads(q2, "src", encoder, "sink");
+
+    // Encoder --> RTP-Payloader
+    gst_element_link_pads(encoder, "src", rtpPayloader, "sink");
+
+    // RTP-Payloader --> OutboundSink
+    gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
-    //g_object_set(G_OBJECT(), "port", "6000", NULL);
 }
 
 void MainWindow::on_change_overlay_clicked()
