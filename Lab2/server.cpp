@@ -55,14 +55,13 @@ void Server::on_readyRead()
 
         // Add sender
         arr["sender-ip"] = socket->peerAddress().toString();
-        arr["sender-name"] = socket->peerName();
         arr["sender-port"] = QString::number(socket->peerPort());
 
         // Back to QString
         QJsonObject obj2 = QJsonObject::fromVariantMap(arr);
         QJsonDocument doc;
         doc.setObject(obj2);
-        QString str2(doc.toJson());
+        QString str2(doc.toJson().replace("\n",""));
 
         emit didReceiveMessage(str2);
     }

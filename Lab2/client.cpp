@@ -15,6 +15,7 @@ Client::Client(QObject *parent) :
     connect(socket, SIGNAL(connected()),
             this, SLOT(on_connected()));
     isConnected = false;
+    messageBuffer = QVariantMap();
 }
 
 void Client::on_connected()
@@ -42,12 +43,13 @@ void Client::internalSendMessage(){
         QJsonDocument doc;
         QJsonObject obj = QJsonObject::fromVariantMap(arr);
         doc.setObject(obj);
-        QString message(doc.toJson());
+        QString message(doc.toJson().replace("\n",""));
 
         // Send string!
         QString data = message + "\n";
         socket->write(data.toStdString().c_str());
         socket->flush();
+        messageBuffer = QVariantMap();
     }
 }
 
