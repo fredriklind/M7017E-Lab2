@@ -29,6 +29,8 @@ private slots:
 
     void on_change_overlay_clicked();
 
+    void on_messageField_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     Server *server;

@@ -76,55 +76,77 @@ void MainWindow::on_gst2_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     GstElement *pipeline;
-    GstElement *source, *sink, *smokeenc, *ffmpegcolorspace, *udpsink;
+    GstElement *source, *sink, *sink2, *capsfilter, *tee, *q1, *q2, *faceoverlay;
+    GstCaps *caps;
     /* init */
     gst_init (NULL, NULL);
 
     /* create pipeline */
-    pipeline = gst_pipeline_new ("my-pipeline");
-
-
+    pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
     /* create elements */
     source = gst_element_factory_make ("autovideosrc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
     sink = gst_element_factory_make ("autovideosink", NULL);
+    sink2 = gst_element_factory_make ("autovideosink", NULL);
+    capsfilter = gst_element_factory_make ("capsfilter", NULL);
+    tee = gst_element_factory_make("tee", NULL);
+    q1 = gst_element_factory_make("queue", NULL);
+    q2 = gst_element_factory_make("queue", NULL);
+    faceoverlay = gst_element_factory_make("faceoverlay", NULL);
 
-    smokeenc = gst_element_factory_make ("smokeenc", NULL);
-    ffmpegcolorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
-    udpsink = gst_element_factory_make("multiudpsink", NULL);
+    // Setup caps
+    caps = gst_caps_new_simple ("video/x-raw-yuv",
+            "width", G_TYPE_INT, 640,
+            "height", G_TYPE_INT, 480,
+            "framerate", GST_TYPE_FRACTION, 30, 1,
+            NULL);
 
     // Set attributes
-    g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","CAM1", "valign","top", "halign","left", "shaded-background", true, NULL);
-    gst_bin_add_many (GST_BIN (pipeline), source, overlay, sink, NULL);
+    g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","Kamura 1", "valign","top", "halign","left", "shaded-background", true, NULL);
+    //g_object_set(G_OBJECT(faceoverlay), "location", "/Users/fredriklind/face_mask.svg", NULL);
 
-    g_object_set(G_OBJECT(smokeenc), "keyframe", 8, "qmax", 40, NULL);
-    g_object_set(G_OBJECT(udpsink), "clients", "130.240.93.175:6000", NULL);
+    // Add to bin
+    gst_bin_add_many (GST_BIN (pipeline), source, capsfilter, tee, overlay, sink, sink2, q1, q2, faceoverlay, NULL);
 
-    // Link pads
-    gst_element_link_pads(source, "src", overlay, "video_sink");
-    gst_element_link_pads(overlay, "src", sink, "sink");
+    // Custom linking
+    GstPad *pad1, *pad2;
+    gchar *pad1name, *pad2name;
+    pad1 = gst_element_get_request_pad (tee, "src%d");
+    pad1name = gst_pad_get_name (pad1);
+    pad2 = gst_element_get_request_pad (tee, "src%d");
+    pad2name = gst_pad_get_name (pad2);
 
-    gst_element_link_pads(overlay, "src", smokeenc, "sink");
-    gst_element_link_pads(smokeenc, "src", ffmpegcolorspace, "sink");
-    gst_element_link_pads(ffmpegcolorspace, "src", udpsink, "sink");
+    gst_element_link_pads(source, "src", capsfilter, "sink");
+
+    //Text overlay
+    gst_element_link_pads (capsfilter, "src", overlay, "video_sink");
+    gst_element_link_pads (overlay, "src", tee, "sink");
+
+    // Face overlay
+    //gst_element_link_pads (capsfilter, "src", faceoverlay, "sink");
+    //gst_element_link_pads (faceoverlay, "src", tee, "sink");
+
+
+    gst_element_link_pads (tee, pad1name, q1, "sink");
+    gst_element_link_pads (tee, pad2name, q2, "sink");
+
+    gst_element_link_pads (q1, "src", sink, "sink");
+    gst_element_link_pads (q2, "src", sink2, "sink");
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
-    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_MEDIA_TYPE, "pipeline");
+    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
     //g_object_set(G_OBJECT(), "port", "6000", NULL);
 }
 
-// For later
-/*if(GST_IS_X_OVERLAY(video)){
-    gst_x_overlay_set_window_handle(GST_X_OVERLAY(video),ui->videocontainer->winId());
-} else {
-    qDebug() << "Video is not an x-voersalsdak thing";
-}*/
-
-
 void MainWindow::on_change_overlay_clicked()
 {
-    const char* str = ui->messageField->text().toUtf8();
-    g_object_set(G_OBJECT(overlay), "text", str, NULL);
 
+
+}
+
+void MainWindow::on_messageField_textChanged(const QString &arg1)
+{
+    const char* str = ui->messageField->text().toHtmlEscaped().toUtf8();
+    g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }

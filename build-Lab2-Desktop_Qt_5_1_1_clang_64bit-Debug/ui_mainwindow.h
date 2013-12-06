@@ -24,7 +24,6 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "videocontainer.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -33,17 +32,18 @@ class Ui_MainWindow
 public:
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
-    VideoContainer *videocontainer;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer_2;
-    QPushButton *pushButton;
-    QPushButton *pushButton_2;
     QLabel *label;
     QLineEdit *ipField;
     QLabel *label_2;
     QLineEdit *messageField;
     QPushButton *sendButton;
-    QLabel *output;
+    QPushButton *listenButton;
+    QPushButton *gst1;
+    QPushButton *gst2;
+    QPushButton *pushButton;
+    QPushButton *change_overlay;
     QSpacerItem *horizontalSpacer;
     QStatusBar *statusBar;
     QMenuBar *menu;
@@ -52,7 +52,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(687, 96);
+        MainWindow->resize(907, 96);
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -66,18 +66,6 @@ public:
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        videocontainer = new VideoContainer(centralWidget);
-        videocontainer->setObjectName(QStringLiteral("videocontainer"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Ignored);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(1);
-        sizePolicy1.setHeightForWidth(videocontainer->sizePolicy().hasHeightForWidth());
-        videocontainer->setSizePolicy(sizePolicy1);
-        videocontainer->setAutoFillBackground(false);
-        videocontainer->setStyleSheet(QStringLiteral("background:black;"));
-
-        verticalLayout->addWidget(videocontainer);
-
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
@@ -87,16 +75,6 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_2);
 
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        horizontalLayout->addWidget(pushButton);
-
-        pushButton_2 = new QPushButton(centralWidget);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-
-        horizontalLayout->addWidget(pushButton_2);
-
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
 
@@ -104,11 +82,6 @@ public:
 
         ipField = new QLineEdit(centralWidget);
         ipField->setObjectName(QStringLiteral("ipField"));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(ipField->sizePolicy().hasHeightForWidth());
-        ipField->setSizePolicy(sizePolicy2);
 
         horizontalLayout->addWidget(ipField);
 
@@ -119,8 +92,11 @@ public:
 
         messageField = new QLineEdit(centralWidget);
         messageField->setObjectName(QStringLiteral("messageField"));
-        sizePolicy2.setHeightForWidth(messageField->sizePolicy().hasHeightForWidth());
-        messageField->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(messageField->sizePolicy().hasHeightForWidth());
+        messageField->setSizePolicy(sizePolicy1);
 
         horizontalLayout->addWidget(messageField);
 
@@ -129,10 +105,30 @@ public:
 
         horizontalLayout->addWidget(sendButton);
 
-        output = new QLabel(centralWidget);
-        output->setObjectName(QStringLiteral("output"));
+        listenButton = new QPushButton(centralWidget);
+        listenButton->setObjectName(QStringLiteral("listenButton"));
 
-        horizontalLayout->addWidget(output);
+        horizontalLayout->addWidget(listenButton);
+
+        gst1 = new QPushButton(centralWidget);
+        gst1->setObjectName(QStringLiteral("gst1"));
+
+        horizontalLayout->addWidget(gst1);
+
+        gst2 = new QPushButton(centralWidget);
+        gst2->setObjectName(QStringLiteral("gst2"));
+
+        horizontalLayout->addWidget(gst2);
+
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        horizontalLayout->addWidget(pushButton);
+
+        change_overlay = new QPushButton(centralWidget);
+        change_overlay->setObjectName(QStringLiteral("change_overlay"));
+
+        horizontalLayout->addWidget(change_overlay);
 
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -147,7 +143,7 @@ public:
         MainWindow->setStatusBar(statusBar);
         menu = new QMenuBar(MainWindow);
         menu->setObjectName(QStringLiteral("menu"));
-        menu->setGeometry(QRect(0, 0, 687, 22));
+        menu->setGeometry(QRect(0, 0, 907, 25));
         MainWindow->setMenuBar(menu);
 
         retranslateUi(MainWindow);
@@ -158,12 +154,15 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        pushButton->setText(QApplication::translate("MainWindow", "Client", 0));
-        pushButton_2->setText(QApplication::translate("MainWindow", "Server", 0));
-        label->setText(QApplication::translate("MainWindow", "IP", 0));
-        label_2->setText(QApplication::translate("MainWindow", "Message", 0));
+        label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
+        ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
+        label_2->setText(QApplication::translate("MainWindow", "Message:", 0));
         sendButton->setText(QApplication::translate("MainWindow", "Send", 0));
-        output->setText(QApplication::translate("MainWindow", "Response", 0));
+        listenButton->setText(QApplication::translate("MainWindow", "Turn on linstening", 0));
+        gst1->setText(QApplication::translate("MainWindow", "Gst-send", 0));
+        gst2->setText(QApplication::translate("MainWindow", "Gst-rereive!", 0));
+        pushButton->setText(QApplication::translate("MainWindow", "BAM", 0));
+        change_overlay->setText(QApplication::translate("MainWindow", "Change", 0));
     } // retranslateUi
 
 };
