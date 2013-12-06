@@ -36,14 +36,13 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QLabel *label;
     QLineEdit *ipField;
+    QPushButton *pushButton_2;
     QLabel *label_2;
     QLineEdit *messageField;
+    QPushButton *pushButton;
+    QPushButton *gst2;
     QPushButton *sendButton;
     QPushButton *listenButton;
-    QPushButton *gst1;
-    QPushButton *gst2;
-    QPushButton *pushButton;
-    QPushButton *change_overlay;
     QSpacerItem *horizontalSpacer;
     QStatusBar *statusBar;
     QMenuBar *menu;
@@ -85,6 +84,11 @@ public:
 
         horizontalLayout->addWidget(ipField);
 
+        pushButton_2 = new QPushButton(centralWidget);
+        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
+
+        horizontalLayout->addWidget(pushButton_2);
+
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
 
@@ -100,6 +104,16 @@ public:
 
         horizontalLayout->addWidget(messageField);
 
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+
+        horizontalLayout->addWidget(pushButton);
+
+        gst2 = new QPushButton(centralWidget);
+        gst2->setObjectName(QStringLiteral("gst2"));
+
+        horizontalLayout->addWidget(gst2);
+
         sendButton = new QPushButton(centralWidget);
         sendButton->setObjectName(QStringLiteral("sendButton"));
 
@@ -109,26 +123,6 @@ public:
         listenButton->setObjectName(QStringLiteral("listenButton"));
 
         horizontalLayout->addWidget(listenButton);
-
-        gst1 = new QPushButton(centralWidget);
-        gst1->setObjectName(QStringLiteral("gst1"));
-
-        horizontalLayout->addWidget(gst1);
-
-        gst2 = new QPushButton(centralWidget);
-        gst2->setObjectName(QStringLiteral("gst2"));
-
-        horizontalLayout->addWidget(gst2);
-
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-
-        horizontalLayout->addWidget(pushButton);
-
-        change_overlay = new QPushButton(centralWidget);
-        change_overlay->setObjectName(QStringLiteral("change_overlay"));
-
-        horizontalLayout->addWidget(change_overlay);
 
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -156,13 +150,12 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
         ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
-        label_2->setText(QApplication::translate("MainWindow", "Message:", 0));
-        sendButton->setText(QApplication::translate("MainWindow", "Send", 0));
-        listenButton->setText(QApplication::translate("MainWindow", "Turn on linstening", 0));
-        gst1->setText(QApplication::translate("MainWindow", "Gst-send", 0));
-        gst2->setText(QApplication::translate("MainWindow", "Gst-rereive!", 0));
-        pushButton->setText(QApplication::translate("MainWindow", "BAM", 0));
-        change_overlay->setText(QApplication::translate("MainWindow", "Change", 0));
+        pushButton_2->setText(QApplication::translate("MainWindow", "Add client", 0));
+        label_2->setText(QApplication::translate("MainWindow", "Overlay", 0));
+        pushButton->setText(QApplication::translate("MainWindow", "Start server", 0));
+        gst2->setText(QApplication::translate("MainWindow", "Start client", 0));
+        sendButton->setText(QApplication::translate("MainWindow", "Send Text", 0));
+        listenButton->setText(QApplication::translate("MainWindow", "Listen for text", 0));
     } // retranslateUi
 
 };

@@ -75,9 +75,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Add client</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Message:</string>
+         <string>Overlay</string>
         </property>
        </widget>
       </item>
@@ -92,44 +99,30 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="sendButton">
+       <widget class="QPushButton" name="pushButton">
         <property name="text">
-         <string>Send</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="listenButton">
-        <property name="text">
-         <string>Turn on linstening</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="gst1">
-        <property name="text">
-         <string>Gst-send</string>
+         <string>Start server</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="gst2">
         <property name="text">
-         <string>Gst-rereive!</string>
+         <string>Start client</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="sendButton">
         <property name="text">
-         <string>BAM</string>
+         <string>Send Text</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="change_overlay">
+       <widget class="QPushButton" name="listenButton">
         <property name="text">
-         <string>Change</string>
+         <string>Listen for text</string>
         </property>
        </widget>
       </item>

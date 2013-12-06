@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#define LISTEN_IP 5000
+#define LISTEN_PORT 5000
 
 Client::Client(QObject *parent) :
     QObject(parent)
@@ -53,5 +53,5 @@ void Client::internalSendMessage(){
 
 void Client::connectToServer(QHostAddress ip)
 {
-    if(!isConnected) socket->connectToHost(ip, LISTEN_IP);
+    if(!isConnected) socket->connectToHost(ip, LISTEN_PORT);
 }

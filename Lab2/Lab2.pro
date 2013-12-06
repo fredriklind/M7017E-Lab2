@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         videocontainer.cpp \
     client.cpp \
-    server.cpp
+    server.cpp \
+    videoserver.cpp
 
 HEADERS  += mainwindow.h \
          videocontainer.h \
     client.h \
-    server.h
+    server.h \
+    videoserver.h
 
 FORMS    += mainwindow.ui
 
