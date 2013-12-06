@@ -75,16 +75,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="callButton">
         <property name="text">
-         <string>Add client</string>
+         <string>Call</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Overlay</string>
+         <string>Message</string>
         </property>
        </widget>
       </item>
@@ -99,30 +99,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QCheckBox" name="checkBox">
         <property name="text">
-         <string>Start server</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="gst2">
-        <property name="text">
-         <string>Start client</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="sendButton">
-        <property name="text">
-         <string>Send Text</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="listenButton">
-        <property name="text">
-         <string>Listen for text</string>
+         <string>Filter</string>
         </property>
        </widget>
       </item>

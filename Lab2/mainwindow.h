@@ -8,6 +8,12 @@
 #include "videoserver.h"
 //#include "videoclient.h"
 
+typedef enum {
+    MAIN_STATE_IDLE     =0,
+    MAIN_STATE_CLIENT   =1,
+    MAIN_STATE_SERVER   =2
+} MainState;
+
 namespace Ui {
 class MainWindow;
 }
@@ -22,13 +28,8 @@ public:
 
 private slots:
     void serverDidReceiveMessage(QString);
-    void on_sendButton_clicked();
-    void on_listenButton_clicked();
-    void on_gst2_clicked();
-    void on_pushButton_clicked();
     void on_messageField_textChanged(const QString &arg1);
-
-    void on_pushButton_2_clicked();
+    void on_callButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -36,6 +37,8 @@ private:
     Client *client;
     GstElement *overlay;
     VideoServer *videoServer;
+    void delegateMessage(QVariantMap);
+    MainState currentMainState;
 };
 
 #endif // MAINWINDOW_H

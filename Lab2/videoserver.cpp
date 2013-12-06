@@ -52,7 +52,6 @@ VideoServer::VideoServer(QObject *parent) :
     pad2 = gst_element_get_request_pad (tee, "src%d");
     pad2name = gst_pad_get_name (pad2);
 
-
     /* ------------- The mighty pipeline ------------- //
 
      Source --> Capsfilter --> Overlay --> Tee -->  Queue1 --> Sink
@@ -94,4 +93,9 @@ VideoServer::VideoServer(QObject *parent) :
 void VideoServer::addNewClient(QHostAddress ip)
 {
     g_signal_emit_by_name(outboundSink, "add", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
+}
+
+void VideoServer::removeClient(QHostAddress ip)
+{
+    g_signal_emit_by_name(outboundSink, "remove", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
 }

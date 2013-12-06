@@ -11,6 +11,7 @@ class VideoServer : public QObject
 public:
     explicit VideoServer(QObject *parent = 0);
     void addNewClient(QHostAddress);
+    void removeClient(QHostAddress);
 
 private:
     GstElement *pipeline, *outboundSink;
