@@ -37,7 +37,7 @@ void MainWindow::on_sendButton_clicked()
     QVariantMap arr;
     arr["message"] = ui->messageField->text();
     arr["Other non-related stuff"] = "Booyah";
-    QHostAddress ip("130.240.93.175");
+    QHostAddress ip(ui->ipField->text());
     client->sendMessage(arr, ip);
 }
 
