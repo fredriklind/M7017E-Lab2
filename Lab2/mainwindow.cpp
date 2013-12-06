@@ -68,7 +68,7 @@ void MainWindow::on_gst2_clicked()
     GstElement *video;
     gst_init (NULL, NULL);
     GError *err = NULL;
-    video = gst_parse_launch("udpsrc ! ffdec_h264 ! autovideosink", &err);
+    video = gst_parse_launch("udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink", &err);
     //qDebug() << err->message;
     gst_element_set_state (video, GST_STATE_PLAYING);
 }
