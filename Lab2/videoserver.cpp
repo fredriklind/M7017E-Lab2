@@ -28,7 +28,7 @@ VideoServer::VideoServer(QObject *parent) :
     q2 = gst_element_factory_make("queue", NULL);
     rtpPayloader = gst_element_factory_make("rtph264pay", NULL);
 
-    print_pad_capabilities(source, "src");
+    print_pad_capabilities(source, (gchar*)"src");
 
     // Setup caps
     caps = gst_caps_new_simple ("video/x-raw-yuv",
@@ -44,7 +44,7 @@ VideoServer::VideoServer(QObject *parent) :
     //g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.175:6002", NULL);
 
     // Add everything to the pipeline
-    gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, q1, NULL);
+    gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, q1, q2, outboundSink, rtpPayloader, NULL);
 
     // Request 2 tee sink pads
     GstPad *pad1, *pad2;
@@ -74,19 +74,19 @@ VideoServer::VideoServer(QObject *parent) :
     gst_element_link_pads (tee, pad1name, q1, "sink");
 
     // Tee --> Queue2
-    //gst_element_link_pads (tee, pad2name, q2, "sink");
+    gst_element_link_pads (tee, pad2name, q2, "sink");
 
     // Queue1 --> Sink
     gst_element_link_pads(q1, "src", sink, "sink");
 
     // Queue2 --> Encoder
-    //gst_element_link_pads(q2, "src", encoder, "sink");
+    gst_element_link_pads(q2, "src", encoder, "sink");
 
     // Encoder --> RTP-Payloader
-    //gst_element_link_pads(encoder, "src", rtpPayloader, "sink");
+    gst_element_link_pads(encoder, "src", rtpPayloader, "sink");
 
     // RTP-Payloader --> OutboundSink
-    //gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
+    gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");

@@ -6,7 +6,7 @@
 #include "client.h"
 #include <gst/gst.h>
 #include "videoserver.h"
-//#include "videoclient.h"
+#include "videoclient.h"
 
 typedef enum {
     MAIN_STATE_IDLE     =0,
@@ -37,8 +37,11 @@ private:
     Client *client;
     GstElement *overlay;
     VideoServer *videoServer;
+    VideoClient *videoClient;
     void delegateMessage(QVariantMap);
     MainState currentMainState;
+    QVariantMap participants;
+    QHostAddress myIP;
 };
 
 #endif // MAINWINDOW_H

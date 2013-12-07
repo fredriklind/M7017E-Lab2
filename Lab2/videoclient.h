@@ -8,6 +8,7 @@ class VideoClient : public QObject
     Q_OBJECT
 public:
     explicit VideoClient(QObject *parent = 0);
+    void addListenPort(QString);
     
 signals:
     

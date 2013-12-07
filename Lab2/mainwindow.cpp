@@ -8,9 +8,10 @@
 #include <QMessageBox>
 #include <QHostAddress>
 #include "videoserver.h"
+#include <QNetworkInterface>
 
 // The listen command!
-// udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
+// GST_DEBUG=2,udpsrc:5 gst-launch-0.10 -v udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,6 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
     server->listen();
     currentMainState = MAIN_STATE_IDLE;
     connect(server, SIGNAL(didReceiveMessage(QString)), this, SLOT(serverDidReceiveMessage(QString)));
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+            myIP = address.toString();
+    }
 }
 
 void MainWindow::serverDidReceiveMessage(QString str)
@@ -36,9 +41,28 @@ void MainWindow::delegateMessage(QVariantMap arr)
 {
     QString command = arr["command"].toString();
 
-    if(currentMainState == MAIN_STATE_IDLE)
+   /* if(command == "initiate-call"){
 
-    qDebug() << command;
+        // IF_CALLEE_HAS_PARTICIPANTS Add self to existing participants, send update-participants to all
+        // IF IDLE: Add self to participants with STARTING_PORT
+        if(participants.isEmpty()){
+            if(arr.contains("participants")){
+                setParticipants(arr["participants"]);
+            }
+            addParticipant(myIP);
+        }
+
+        // Add caller to participants with LAST_IP of participants
+        addParticipant(arr["sender-ip"]);
+
+        // Send update-participants command to all participants
+        client->updateParticipants();
+    }
+
+    if(command == "update-participants"){
+        // Set local participant array to received one
+        setParticipants(arr["participants"]);
+    }*/
 }
 
 void MainWindow::on_callButton_clicked()
@@ -49,6 +73,8 @@ void MainWindow::on_callButton_clicked()
     client->sendMessage(arr, ip);
 
     videoServer = new VideoServer(this);
+    //videoClient = new VideoClient(this);
+    //videoClient->addListenPort("6002");
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
