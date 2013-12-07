@@ -11,13 +11,13 @@
 VideoServer::VideoServer(QObject *parent) :
     QObject(parent)
 {  
-    GstElement *source, *sink, *capsfilter, *tee, *q1, *q2, *encoder, *rtpPayloader, *overlay;
+    GstElement *source, *sink, *capsfilter, *tee, *q1, *q2, *encoder, *rtpPayloader;
     GstCaps *caps;
     gst_init (NULL, NULL);
     pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
     // Create the elements
-    source = gst_element_factory_make ("autovideosrc", NULL);
+    source = gst_element_factory_make ("qtkitvideosrc", NULL);
     encoder = gst_element_factory_make ("x264enc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
     sink = gst_element_factory_make ("autovideosink", NULL);
@@ -27,6 +27,8 @@ VideoServer::VideoServer(QObject *parent) :
     q1 = gst_element_factory_make("queue", NULL);
     q2 = gst_element_factory_make("queue", NULL);
     rtpPayloader = gst_element_factory_make("rtph264pay", NULL);
+
+    print_pad_capabilities(source, "src");
 
     // Setup caps
     caps = gst_caps_new_simple ("video/x-raw-yuv",
@@ -38,11 +40,11 @@ VideoServer::VideoServer(QObject *parent) :
     // Set some attributes
     g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","Kamura 1", "valign","top", "halign","left", "shaded-background", true, NULL);
     g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
-    g_object_set(G_OBJECT(encoder), "speed-preset", 1, "pass", 0, "quantizer", 20, "tune", "zerolatency", NULL);
+    g_object_set(G_OBJECT(encoder), "speed-preset", 1, "pass", 0, "quantizer", 20, "tune", 0x00000004, NULL);
     //g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.175:6002", NULL);
 
     // Add everything to the pipeline
-    gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, outboundSink, q1, q2, rtpPayloader, NULL);
+    gst_bin_add_many (GST_BIN (pipeline), source, encoder, capsfilter, tee, overlay, sink, q1, NULL);
 
     // Request 2 tee sink pads
     GstPad *pad1, *pad2;
@@ -72,22 +74,27 @@ VideoServer::VideoServer(QObject *parent) :
     gst_element_link_pads (tee, pad1name, q1, "sink");
 
     // Tee --> Queue2
-    gst_element_link_pads (tee, pad2name, q2, "sink");
+    //gst_element_link_pads (tee, pad2name, q2, "sink");
 
     // Queue1 --> Sink
     gst_element_link_pads(q1, "src", sink, "sink");
 
     // Queue2 --> Encoder
-    gst_element_link_pads(q2, "src", encoder, "sink");
+    //gst_element_link_pads(q2, "src", encoder, "sink");
 
     // Encoder --> RTP-Payloader
-    gst_element_link_pads(encoder, "src", rtpPayloader, "sink");
+    //gst_element_link_pads(encoder, "src", rtpPayloader, "sink");
 
     // RTP-Payloader --> OutboundSink
-    gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
+    //gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
 
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
+}
+
+void VideoServer::setTextOverlay(QString text){
+    const char* str = text.toHtmlEscaped().toUtf8();
+    g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }
 
 void VideoServer::addNewClient(QHostAddress ip)
@@ -99,3 +106,58 @@ void VideoServer::removeClient(QHostAddress ip)
 {
     g_signal_emit_by_name(outboundSink, "remove", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
 }
+
+/* Shows the CURRENT capabilities of the requested pad in the given element */
+void VideoServer::print_pad_capabilities (GstElement *element, gchar *pad_name) {
+  GstPad *pad = NULL;
+  GstCaps *caps = NULL;
+
+  /* Retrieve pad */
+  pad = gst_element_get_static_pad (element, pad_name);
+  if (!pad) {
+    g_printerr ("Could not retrieve pad '%s'\n", pad_name);
+    return;
+  }
+
+  /* Retrieve negotiated caps (or acceptable caps if negotiation is not finished yet) */
+  caps = gst_pad_get_negotiated_caps (pad);
+  if (!caps)
+    caps = gst_pad_get_caps_reffed (pad);
+
+  /* Print and free */
+  g_print ("Caps for the %s pad:\n", pad_name);
+  print_caps (caps, "      ");
+  gst_caps_unref (caps);
+  gst_object_unref (pad);
+}
+
+void VideoServer::print_caps (const GstCaps * caps, const gchar * pfx) {
+  guint i;
+
+  g_return_if_fail (caps != NULL);
+
+  if (gst_caps_is_any (caps)) {
+    g_print ("%sANY\n", pfx);
+    return;
+  }
+  if (gst_caps_is_empty (caps)) {
+    g_print ("%sEMPTY\n", pfx);
+    return;
+  }
+
+  for (i = 0; i < gst_caps_get_size (caps); i++) {
+    GstStructure *structure = gst_caps_get_structure (caps, i);
+
+    g_print ("%s%s\n", pfx, gst_structure_get_name (structure));
+    gst_structure_foreach (structure, print_field, (gpointer) pfx);
+  }
+}
+
+gboolean VideoServer::print_field (GQuark field, const GValue * value, gpointer pfx) {
+  gchar *str = gst_value_serialize (value);
+
+  g_print ("%s  %15s: %s\n", (gchar *) pfx, g_quark_to_string (field), str);
+  g_free (str);
+  return TRUE;
+}
+

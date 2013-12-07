@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -36,12 +37,10 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QLabel *label;
     QLineEdit *ipField;
+    QPushButton *callButton;
     QLabel *label_2;
     QLineEdit *messageField;
-    QPushButton *sendButton;
-    QPushButton *listenButton;
-    QPushButton *gst1;
-    QPushButton *gst2;
+    QCheckBox *checkBox;
     QSpacerItem *horizontalSpacer;
     QStatusBar *statusBar;
     QMenuBar *menu;
@@ -50,7 +49,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(627, 96);
+        MainWindow->resize(907, 96);
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -83,6 +82,11 @@ public:
 
         horizontalLayout->addWidget(ipField);
 
+        callButton = new QPushButton(centralWidget);
+        callButton->setObjectName(QStringLiteral("callButton"));
+
+        horizontalLayout->addWidget(callButton);
+
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
 
@@ -98,25 +102,10 @@ public:
 
         horizontalLayout->addWidget(messageField);
 
-        sendButton = new QPushButton(centralWidget);
-        sendButton->setObjectName(QStringLiteral("sendButton"));
+        checkBox = new QCheckBox(centralWidget);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
 
-        horizontalLayout->addWidget(sendButton);
-
-        listenButton = new QPushButton(centralWidget);
-        listenButton->setObjectName(QStringLiteral("listenButton"));
-
-        horizontalLayout->addWidget(listenButton);
-
-        gst1 = new QPushButton(centralWidget);
-        gst1->setObjectName(QStringLiteral("gst1"));
-
-        horizontalLayout->addWidget(gst1);
-
-        gst2 = new QPushButton(centralWidget);
-        gst2->setObjectName(QStringLiteral("gst2"));
-
-        horizontalLayout->addWidget(gst2);
+        horizontalLayout->addWidget(checkBox);
 
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -131,7 +120,7 @@ public:
         MainWindow->setStatusBar(statusBar);
         menu = new QMenuBar(MainWindow);
         menu->setObjectName(QStringLiteral("menu"));
-        menu->setGeometry(QRect(0, 0, 627, 22));
+        menu->setGeometry(QRect(0, 0, 907, 25));
         MainWindow->setMenuBar(menu);
 
         retranslateUi(MainWindow);
@@ -144,11 +133,9 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
         ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
-        label_2->setText(QApplication::translate("MainWindow", "Message:", 0));
-        sendButton->setText(QApplication::translate("MainWindow", "Send", 0));
-        listenButton->setText(QApplication::translate("MainWindow", "Turn on linstening", 0));
-        gst1->setText(QApplication::translate("MainWindow", "Gst-send", 0));
-        gst2->setText(QApplication::translate("MainWindow", "Gst-rereive", 0));
+        callButton->setText(QApplication::translate("MainWindow", "Call", 0));
+        label_2->setText(QApplication::translate("MainWindow", "Message", 0));
+        checkBox->setText(QApplication::translate("MainWindow", "Filter", 0));
     } // retranslateUi
 
 };

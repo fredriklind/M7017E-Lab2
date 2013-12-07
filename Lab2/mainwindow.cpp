@@ -47,12 +47,13 @@ void MainWindow::on_callButton_clicked()
     arr["command"] = "initiate-call";
     QHostAddress ip(ui->ipField->text());
     client->sendMessage(arr, ip);
+
+    videoServer = new VideoServer(this);
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
 {
-        //const char* str = ui->messageField->text().toHtmlEscaped().toUtf8();
-        //g_object_set(G_OBJECT(overlay), "text", str, NULL);
+    videoServer->setTextOverlay(arg1);
 }
 
 // Add client
