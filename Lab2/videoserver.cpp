@@ -17,7 +17,7 @@ VideoServer::VideoServer(QObject *parent) :
     pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
     // Create the elements
-    source = gst_element_factory_make ("qtkitvideosrc", NULL);
+    source = gst_element_factory_make ("autovideosrc", NULL);
     encoder = gst_element_factory_make ("x264enc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
     sink = gst_element_factory_make ("autovideosink", NULL);

@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#define LISTEN_PORT 5000
+#define LISTEN_PORT 6000
 
 Client::Client(QObject *parent) :
     QObject(parent)

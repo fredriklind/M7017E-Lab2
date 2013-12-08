@@ -72,9 +72,12 @@ void MainWindow::on_callButton_clicked()
     QHostAddress ip(ui->ipField->text());
     client->sendMessage(arr, ip);
 
-    videoServer = new VideoServer(this);
+    //videoServer = new VideoServer(this);
+    //videoServer->addNewClient(QHostAddress("130.240.93.175"));
     //videoClient = new VideoClient(this);
     //videoClient->addListenPort("6002");
+
+    addParticipant("130.240.53.164", "6000");
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
@@ -88,6 +91,35 @@ void MainWindow::on_messageField_textChanged(const QString &arg1)
     QHostAddress ip(ui->ipField->text());
     videoServer->addNewClient(ip);
 }*/
+
+
+/* ---- Participant list methods ---- */
+void MainWindow::addParticipant(QString ip, int port)
+{
+
+    if(!participants[ip].isValid()){
+            participants.insert(ip, port);
+            videoClient->addListenPort(port);
+            qDebug() << "Did add participant";
+    } else {
+        qDebug() << "Did not add: Participant already in list";
+    }
+}
+
+void MainWindow::removeParticipant(QString ip)
+{
+    if(participants[ip].isValid()){
+            participants.remove(ip);
+            qDebug() << "Did remove participant";
+    } else {
+        qDebug() << "Could not remove: Participant not in list";
+    }
+}
+
+void MainWindow::setParticipants(QVariantMap newParticipantList)
+{
+    participants = newParticipantList;
+}
 
 MainWindow::~MainWindow()
 {

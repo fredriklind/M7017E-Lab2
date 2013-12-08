@@ -42,6 +42,11 @@ private:
     MainState currentMainState;
     QVariantMap participants;
     QHostAddress myIP;
+
+    //Participant methods
+    void addParticipant(QString, QString);
+    void removeParticipant(QString);
+    void setParticipants(QVariantMap);
 };
 
 #endif // MAINWINDOW_H

@@ -16,7 +16,7 @@ Server::Server(QObject *parent) :
 
 void Server::listen()
 {
-    if(!server->listen(QHostAddress::Any,5000))
+    if(!server->listen(QHostAddress::Any,6000))
     {
         qDebug() << "Couldn't listen to port" << server->serverPort() << ":" << server->errorString();
     }

@@ -9,7 +9,10 @@ class VideoClient : public QObject
 public:
     explicit VideoClient(QObject *parent = 0);
     void addListenPort(QString);
-    
+    void removeListenPort(QString);
+private:
+     QMap<int, GstElement> listenPorts;
+
 signals:
     
 public slots:
