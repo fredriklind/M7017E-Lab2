@@ -44,7 +44,7 @@ private:
     QHostAddress myIP;
 
     //Participant methods
-    void addParticipant(QString, QString);
+    void addParticipant(QString, int);
     void removeParticipant(QString);
     void setParticipants(QVariantMap);
 };

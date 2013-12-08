@@ -40,6 +40,7 @@ void MainWindow::serverDidReceiveMessage(QString str)
 void MainWindow::delegateMessage(QVariantMap arr)
 {
     QString command = arr["command"].toString();
+    qDebug() << command;
 
    /* if(command == "initiate-call"){
 
@@ -73,11 +74,9 @@ void MainWindow::on_callButton_clicked()
     client->sendMessage(arr, ip);
 
     //videoServer = new VideoServer(this);
-    //videoServer->addNewClient(QHostAddress("130.240.93.175"));
-    //videoClient = new VideoClient(this);
-    //videoClient->addListenPort("6002");
+    //videoServer->addNewClient("130.240.93.175", 6000);
 
-    addParticipant("130.240.53.164", "6000");
+    //addParticipant("130.240.53.164", 6000);
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)

@@ -10,8 +10,8 @@ class VideoServer : public QObject
     Q_OBJECT
 public:
     explicit VideoServer(QObject *parent = 0);
-    void addNewClient(QHostAddress);
-    void removeClient(QHostAddress);
+    void addNewClient(QString, int);
+    void removeClient(QString);
     void setTextOverlay(QString);
 
 private:

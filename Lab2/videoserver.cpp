@@ -28,7 +28,7 @@ VideoServer::VideoServer(QObject *parent) :
     q2 = gst_element_factory_make("queue", NULL);
     rtpPayloader = gst_element_factory_make("rtph264pay", NULL);
 
-    print_pad_capabilities(source, (gchar*)"src");
+    //print_pad_capabilities(source, (gchar*)"src");
 
     // Setup caps
     caps = gst_caps_new_simple ("video/x-raw-yuv",
@@ -97,14 +97,15 @@ void VideoServer::setTextOverlay(QString text){
     g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }
 
-void VideoServer::addNewClient(QHostAddress ip)
+void VideoServer::addNewClient(QString ip, int port)
 {
-    g_signal_emit_by_name(outboundSink, "add", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
+
+    g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port, NULL);
 }
 
-void VideoServer::removeClient(QHostAddress ip)
+void VideoServer::removeClient(QString ip)
 {
-    g_signal_emit_by_name(outboundSink, "remove", ip.toString().toStdString().c_str(), CLIENT_RECEIVE_PORT, NULL);
+    //g_signal_emit_by_name(outboundSink, "remove", ip.toStdString().c_str(), QString(port).toStdString().c_str(), NULL);
 }
 
 /* Shows the CURRENT capabilities of the requested pad in the given element */
