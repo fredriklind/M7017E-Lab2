@@ -50,22 +50,23 @@ void MainWindow::delegateMessage(QVariantMap arr)
         // IF IDLE: Add self to participants with STARTING_PORT
         if(participants.isEmpty()){
             if(arr.contains("participants")){
-                setParticipants(arr["participants"]);
+                //setParticipants((QVariantMap)arr["participants"]);
             }
             addParticipant(myIP.toString(), STARTING_PORT);
         }
 
         // Add caller to participants with LAST_PORT + 2 of participants
         int lastFreePort = participants[getLastParticipant()].toInt() + 2;
-        addParticipant(arr["sender-ip"], lastFreePort);
+        addParticipant(arr["sender-ip"].toString(), lastFreePort);
 
+        qDebug() << participants[getLastParticipant()];
         // Send update-participants command to all participants
        // client->updateParticipants();
     }
 
     if(command == "update-participants"){
         // Set local participant array to received one
-        setParticipants(arr["participants"]);
+        //setParticipants((QVariantMap)arr["participants"]);
     }
 }
 
@@ -76,11 +77,11 @@ void MainWindow::on_callButton_clicked()
     QHostAddress ip(ui->ipField->text());
     client->sendMessage(arr, ip);
 
-    //videoServer = new VideoServer(this);
-    //videoServer->addNewClient("130.240.93.175", 6000);
+    videoServer = new VideoServer(this);
+    videoServer->addNewClient("130.240.93.175", 5000);
 
-    addParticipant("130.240.53.164", 6000);
-    addParticipant("THE LAST ONE", 1337);
+    //addParticipant("130.240.53.164", 6000);
+    //addParticipant("THE LAST ONE", 1337);
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
@@ -127,9 +128,14 @@ void MainWindow::setParticipants(QVariantMap newParticipantList)
 QString MainWindow::getLastParticipant()
 {
     QMapIterator<QString, QVariant> i(participants);
-    i.toBack();
-    i.previous();
-    return i.key();
+    QString keyWithHighestIP;
+    int ip = 0;
+    while(i.hasNext()){
+        if(i.value().toInt() > ip){
+            keyWithHighestIP = i.key();
+        }
+    }
+    return keyWithHighestIP;
 }
 
 MainWindow::~MainWindow()
