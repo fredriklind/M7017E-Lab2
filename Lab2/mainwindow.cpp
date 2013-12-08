@@ -9,6 +9,9 @@
 #include <QHostAddress>
 #include "videoserver.h"
 #include <QNetworkInterface>
+#include <QMap>
+
+#define STARTING_PORT 5000
 
 // The listen command!
 // GST_DEBUG=2,udpsrc:5 gst-launch-0.10 -v udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
@@ -42,28 +45,28 @@ void MainWindow::delegateMessage(QVariantMap arr)
     QString command = arr["command"].toString();
     qDebug() << command;
 
-   /* if(command == "initiate-call"){
-
+   if(command == "initiate-call"){
         // IF_CALLEE_HAS_PARTICIPANTS Add self to existing participants, send update-participants to all
         // IF IDLE: Add self to participants with STARTING_PORT
         if(participants.isEmpty()){
             if(arr.contains("participants")){
                 setParticipants(arr["participants"]);
             }
-            addParticipant(myIP);
+            addParticipant(myIP.toString(), STARTING_PORT);
         }
 
-        // Add caller to participants with LAST_IP of participants
-        addParticipant(arr["sender-ip"]);
+        // Add caller to participants with LAST_PORT + 2 of participants
+        int lastFreePort = participants[getLastParticipant()].toInt() + 2;
+        addParticipant(arr["sender-ip"], lastFreePort);
 
         // Send update-participants command to all participants
-        client->updateParticipants();
+       // client->updateParticipants();
     }
 
     if(command == "update-participants"){
         // Set local participant array to received one
         setParticipants(arr["participants"]);
-    }*/
+    }
 }
 
 void MainWindow::on_callButton_clicked()
@@ -76,7 +79,8 @@ void MainWindow::on_callButton_clicked()
     //videoServer = new VideoServer(this);
     //videoServer->addNewClient("130.240.93.175", 6000);
 
-    //addParticipant("130.240.53.164", 6000);
+    addParticipant("130.240.53.164", 6000);
+    addParticipant("THE LAST ONE", 1337);
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
@@ -118,6 +122,14 @@ void MainWindow::removeParticipant(QString ip)
 void MainWindow::setParticipants(QVariantMap newParticipantList)
 {
     participants = newParticipantList;
+}
+
+QString MainWindow::getLastParticipant()
+{
+    QMapIterator<QString, QVariant> i(participants);
+    i.toBack();
+    i.previous();
+    return i.key();
 }
 
 MainWindow::~MainWindow()

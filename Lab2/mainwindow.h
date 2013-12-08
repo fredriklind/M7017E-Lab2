@@ -47,6 +47,7 @@ private:
     void addParticipant(QString, int);
     void removeParticipant(QString);
     void setParticipants(QVariantMap);
+    QString getLastParticipant();
 };
 
 #endif // MAINWINDOW_H
