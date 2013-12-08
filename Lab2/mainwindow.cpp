@@ -56,7 +56,7 @@ void MainWindow::delegateMessage(QVariantMap arr)
         }
 
         // Add caller to participants with LAST_PORT + 2 of participants
-        int lastFreePort = participants[getLastParticipant()].toInt() + 2;
+        int lastFreePort = participants[getLastParticipant()].toInt() + 1;
         addParticipant(arr["sender-ip"].toString(), lastFreePort);
 
         qDebug() << participants[getLastParticipant()];
@@ -78,7 +78,7 @@ void MainWindow::on_callButton_clicked()
     client->sendMessage(arr, ip);
 
     videoServer = new VideoServer(this);
-    videoServer->addNewClient("130.240.93.175", 5000);
+    videoServer->addNewClient("130.240.93.175", 5002);
 
     //addParticipant("130.240.53.164", 6000);
     //addParticipant("THE LAST ONE", 1337);
@@ -103,7 +103,7 @@ void MainWindow::addParticipant(QString ip, int port)
 
     if(!participants[ip].isValid()){
             participants.insert(ip, port);
-            videoClient->addListenPort(port);
+            if(ip != myIP.toString()) videoClient->addListenPort(port);
             qDebug() << "Did add participant";
     } else {
         qDebug() << "Did not add: Participant already in list";
@@ -131,7 +131,9 @@ QString MainWindow::getLastParticipant()
     QString keyWithHighestIP;
     int ip = 0;
     while(i.hasNext()){
+        i.next();
         if(i.value().toInt() > ip){
+            ip = i.value().toInt();
             keyWithHighestIP = i.key();
         }
     }
