@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 2.7.0, 2013-12-08T15:11:31. -->
+<!-- Written by QtCreator 2.7.0, 2013-12-09T19:28:55. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -109,7 +109,7 @@
     <value type="int" key="ProjectExplorer.BuildConfiguration.BuildStepListCount">2</value>
     <value type="bool" key="ProjectExplorer.BuildConfiguration.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="ProjectExplorer.BuildConfiguration.UserEnvironmentChanges">
-     <value type="QString">GST_DEBUG=2,multiudpsink:5</value>
+     <value type="QString">GST_DEBUG=2</value>
      <value type="QString">GST_DEBUG_DUMP_DOT_DIR=/afs/ltu.se/students/e/f/efiiln-0/M7017E-Lab2/dot-files</value>
     </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Debug</value>

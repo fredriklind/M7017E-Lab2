@@ -4,13 +4,14 @@
 #include <QObject>
 #include <QMap>
 #include <gst/gst.h>
+#include <QWidget>
 
 class VideoClient : public QObject
 {
     Q_OBJECT
 public:
     explicit VideoClient(QObject *parent = 0);
-    void addListenPort(int);
+    void addListenPort(int, WId);
     void removeListenPort(int);
 private:
      QMap<int, GstElement*> listenPorts;

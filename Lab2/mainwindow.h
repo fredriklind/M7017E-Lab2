@@ -31,6 +31,8 @@ private slots:
     void on_messageField_textChanged(const QString &arg1);
     void on_callButton_clicked();
 
+    void on_showCamera_clicked();
+
 private:
     Ui::MainWindow *ui;
     Server *server;
@@ -42,6 +44,7 @@ private:
     MainState currentMainState;
     QVariantMap participants;
     QHostAddress myIP;
+    WId addVideoToInterface();
 
     //Participant methods
     void addParticipant(QString, int);

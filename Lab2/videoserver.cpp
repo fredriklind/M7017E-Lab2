@@ -17,7 +17,7 @@ VideoServer::VideoServer(QObject *parent) :
     pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
     // Create the elements
-    source = gst_element_factory_make ("autovideosrc", NULL);
+    source = gst_element_factory_make ("videotestsrc", NULL);
     encoder = gst_element_factory_make ("x264enc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
     sink = gst_element_factory_make ("autovideosink", NULL);
@@ -99,8 +99,35 @@ void VideoServer::setTextOverlay(QString text){
 
 void VideoServer::addNewClient(QString ip, int port)
 {
+    // Send to the new client
+    g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port+1, NULL);
 
-    g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port, NULL);
+    //Receive from the new client
+
+    // Request a new videomixer sink pad and connec it to a new udpsrc;
+    GstPad *newMixerpad;
+    GstElement *src, *capsfilter;
+    gchar *newMixerPadName;
+    newMixerpad = gst_element_get_request_pad (mixer, "sink_%d");
+    newMixerPadName = gst_pad_get_name (newMixerpad);
+
+    capsfilter = gst_element_factory_make ("capsfilter", NULL);
+
+    QString str("udpsrc port="+ QString::number(port) + " ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! ffmpegcolorspace ! queue leaky=upstream");
+    // GError *err = NULL;
+    GstElement *clientBin = gst_parse_bin_from_description(str.toStdString().c_str(), true, NULL);
+    QString clientBinName("client " + ip);
+    g_object_set(G_OBJECT(clientBin), "name", clientBinName.toStdString().c_str(), NULL);
+
+    gst_bin_add_many(GST_BIN(pipeline), clientBin, NULL);
+    gst_element_link_pads(clientBin, "src", mixer, newMixerPadName);
+
+    g_object_set(G_OBJECT(newMixerpad),"border-alpha", 0, NULL);
+    g_object_set(G_OBJECT(newMixerpad),"left", -50, NULL);
+    g_object_set(G_OBJECT(newMixerpad),"top", -50, NULL);
+
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline-after-client-add");
 }
 
 void VideoServer::removeClient(QString ip)
@@ -161,4 +188,3 @@ gboolean VideoServer::print_field (GQuark field, const GValue * value, gpointer 
   g_free (str);
   return TRUE;
 }
-

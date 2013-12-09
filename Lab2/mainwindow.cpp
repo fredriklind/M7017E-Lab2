@@ -10,11 +10,14 @@
 #include "videoserver.h"
 #include <QNetworkInterface>
 #include <QMap>
+#include <QVBoxLayout>
+#include <QGridLayout>
 
 #define STARTING_PORT 5000
 
 // The listen command!
 // GST_DEBUG=2,udpsrc:5 gst-launch-0.10 -v udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
+// gst-launch-0.10 videotestsrc ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -30,6 +33,21 @@ MainWindow::MainWindow(QWidget *parent) :
         if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
             myIP = address.toString();
     }
+    videoServer = NULL;
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    //layout->setSizeConstraint(QLayout::SetFixedSize);
+    ui->videoWidget->setStyleSheet("height:200px");
+    ui->videoWidget->setLayout(layout);
+
+}
+
+WId MainWindow::addVideoToInterface()
+{
+    QWidget *w = new QWidget();
+    ui->videoWidget->layout()->addWidget(w);
+    w->setStyleSheet("height:200px;background:green;");
+    return w->winId();
 }
 
 void MainWindow::serverDidReceiveMessage(QString str)
@@ -72,13 +90,17 @@ void MainWindow::delegateMessage(QVariantMap arr)
 
 void MainWindow::on_callButton_clicked()
 {
-    QVariantMap arr;
+    /*QVariantMap arr;
     arr["command"] = "initiate-call";
     QHostAddress ip(ui->ipField->text());
-    client->sendMessage(arr, ip);
+    client->sendMessage(arr, ip);*/
 
-    videoServer = new VideoServer(this);
-    videoServer->addNewClient("130.240.93.175", 5002);
+    //videoClient->addListenPort(5000,addVideoToInterface());
+
+    addVideoToInterface();
+
+    //videoServer = new VideoServer(this);
+    //videoServer->addNewClient("130.240.93.175", 5001);
 
     //addParticipant("130.240.53.164", 6000);
     //addParticipant("THE LAST ONE", 1337);
@@ -103,7 +125,7 @@ void MainWindow::addParticipant(QString ip, int port)
 
     if(!participants[ip].isValid()){
             participants.insert(ip, port);
-            if(ip != myIP.toString()) videoClient->addListenPort(port);
+            if(ip != myIP.toString()) videoClient->addListenPort(port, ui->videoWidget->winId());
             qDebug() << "Did add participant";
     } else {
         qDebug() << "Did not add: Participant already in list";
@@ -123,6 +145,14 @@ void MainWindow::removeParticipant(QString ip)
 void MainWindow::setParticipants(QVariantMap newParticipantList)
 {
     participants = newParticipantList;
+    QMapIterator<QString, QVariant> i(participants);
+    while(i.hasNext()){
+        i.next();
+        if(i.key() == myIP.toString()){
+            //videoServer->addNewClient();
+        }
+
+    }
 }
 
 QString MainWindow::getLastParticipant()
@@ -140,7 +170,17 @@ QString MainWindow::getLastParticipant()
     return keyWithHighestIP;
 }
 
+void MainWindow::on_showCamera_clicked()
+{
+    if(videoServer == NULL){
+        videoServer = new VideoServer();
+        ui->showCamera->hide();
+    }
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+

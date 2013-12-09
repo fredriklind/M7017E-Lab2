@@ -15,12 +15,13 @@ public:
     void setTextOverlay(QString);
 
 private:
-    GstElement *pipeline, *outboundSink, *overlay;
-    void print_caps (const GstCaps*, const gchar*);
+    GstElement *pipeline, *outboundSink, *overlay, *mixer;
+    void print_caps(const GstCaps*, const gchar*);
     void print_pad_capabilities (GstElement *, gchar *);
-    static gboolean print_field (GQuark , const GValue * , gpointer);
+    static gboolean print_field(GQuark , const GValue * , gpointer);
 
 signals:
+    void windowClosed();
     
 public slots:
     
