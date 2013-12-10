@@ -37,7 +37,6 @@ public:
     QLabel *label;
     QLineEdit *ipField;
     QPushButton *callButton;
-    QPushButton *showCamera;
     QLabel *label_2;
     QLineEdit *messageField;
     QSpacerItem *horizontalSpacer;
@@ -97,11 +96,6 @@ public:
 
         horizontalLayout->addWidget(callButton);
 
-        showCamera = new QPushButton(centralWidget);
-        showCamera->setObjectName(QStringLiteral("showCamera"));
-
-        horizontalLayout->addWidget(showCamera);
-
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
 
@@ -138,7 +132,6 @@ public:
         label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
         ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
         callButton->setText(QApplication::translate("MainWindow", "Call", 0));
-        showCamera->setText(QApplication::translate("MainWindow", "Show camera", 0));
         label_2->setText(QApplication::translate("MainWindow", "Message", 0));
     } // retranslateUi
 

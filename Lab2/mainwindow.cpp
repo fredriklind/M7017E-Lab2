@@ -47,11 +47,17 @@ MainWindow::MainWindow(QWidget *parent) :
             myIP = address.toString();
     }
 
+    ui->label->setToolTip("Your IP: " + myIP);
+
     // Setup video layout
     QHBoxLayout *layout = new QHBoxLayout;
     ui->videoWidget->setStyleSheet("background:black;");
     ui->videoWidget->setLayout(layout);
     videoServer->init(addVideoToInterface());
+
+    rescaleWindow();
+
+    participants = QStringList();
 }
 
 WId MainWindow::addVideoToInterface()
@@ -174,7 +180,12 @@ void MainWindow::setParticipants(QStringList newParticipantList)
  * @return The slot (0,1,2...)
  */
 int MainWindow::mySlot(){
-    return participants.indexOf(myIP);
+    if(participants.contains(myIP)){
+        return participants.indexOf(myIP);
+    } else {
+        qDebug() << "Im not in the participants list!";
+        return participants.count();
+    }
 }
 
 /**

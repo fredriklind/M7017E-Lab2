@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
     QByteArrayData data[7];
-    char stringdata[114];
+    char stringdata[116];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,11 +35,11 @@ QT_MOC_LITERAL(2, 35, 0),
 QT_MOC_LITERAL(3, 36, 27),
 QT_MOC_LITERAL(4, 64, 4),
 QT_MOC_LITERAL(5, 69, 21),
-QT_MOC_LITERAL(6, 91, 21)
+QT_MOC_LITERAL(6, 91, 23)
     },
     "MainWindow\0serverDidReceiveMessage\0\0"
     "on_messageField_textChanged\0arg1\0"
-    "on_callButton_clicked\0on_showCamera_clicked\0"
+    "on_callButton_clicked\0couldNotConnectToCallee\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -60,13 +60,13 @@ static const uint qt_meta_data_MainWindow[] = {
        1,    1,   34,    2, 0x08,
        3,    1,   37,    2, 0x08,
        5,    0,   40,    2, 0x08,
-       6,    0,   41,    2, 0x08,
+       6,    1,   41,    2, 0x08,
 
  // slots: parameters
     QMetaType::Void, QMetaType::QString,    2,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,    2,
 
        0        // eod
 };
@@ -79,7 +79,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->serverDidReceiveMessage((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 1: _t->on_messageField_textChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 2: _t->on_callButton_clicked(); break;
-        case 3: _t->on_showCamera_clicked(); break;
+        case 3: _t->couldNotConnectToCallee((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     }

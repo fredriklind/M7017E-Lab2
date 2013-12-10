@@ -107,13 +107,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="showCamera">
-        <property name="text">
-         <string>Show camera</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Message</string>

@@ -113,7 +113,8 @@ void VideoServer::setTextOverlay(QString text){
 void VideoServer::sendToNewClient(QString ip, int port)
 {
     // Send to the new client
-    g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port+1, NULL);
+    g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port, NULL);
+    qDebug() << "Now sending to " + ip + " on port " + QString::number(port);
 }
 
 void VideoServer::removeClient(QString ip)
