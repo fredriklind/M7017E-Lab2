@@ -6,6 +6,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#define COMMUNICATION_PORT 5000
+
 Server::Server(QObject *parent) :
     QObject(parent)
 {
@@ -16,7 +18,7 @@ Server::Server(QObject *parent) :
 
 void Server::listen()
 {
-    if(!server->listen(QHostAddress::Any,6000))
+    if(!server->listen(QHostAddress::Any,COMMUNICATION_PORT))
     {
         qDebug() << "Couldn't listen to port" << server->serverPort() << ":" << server->errorString();
     }

@@ -14,7 +14,9 @@
 #include <QGridLayout>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QTcpSocket>
 
+#define COMMUNICATION_PORT 5000
 #define BASE_PORT 6000
 #define SLOT_SIZE 10
 
@@ -32,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     client = new Client(this);
     server = new Server(this);
     server->listen();
+    connect(client, SIGNAL(couldNotConnect(QString)), this, SLOT(couldNotConnectToCallee(QString)));
     connect(server, SIGNAL(didReceiveMessage(QString)), this, SLOT(serverDidReceiveMessage(QString)));
 
     // Video communication
@@ -39,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     videoServer = new VideoServer();
 
     // Get local IP
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()){
         if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
             myIP = address.toString();
     }
@@ -68,56 +71,52 @@ void MainWindow::serverDidReceiveMessage(QString str)
     delegateMessage(arr);
 }
 
-void MainWindow::hostLookupResult(QHostInfo info){
-    if(info.error == NoError){
-        qDebug() << "IP found, no error";
-    } else {
-        QMessageBox msgBox;
-        msgBox.setText(info.errorString());
-        msgBox.exec();
-    }
-}
-
 void MainWindow::delegateMessage(QVariantMap arr)
 {
     QString command = arr["command"].toString();
-    qDebug() << command;
 
     if(command == "initiate-call"){
-        // IF_CALLEE_HAS_PARTICIPANTS Add self to existing participants, send update-participants to all
-        // IF IDLE: Add self to participants with STARTING_PORT
+        // An empty participants list means that we are currently not in a call
         if(participants.isEmpty()){
+            // This means that the call we are asked to join a call that already contains participants
             if(arr.contains("participants")){
-                //setParticipants((QVariantMap)arr["participants"]);
+                QStringList currentParticipants = arr["participants"].toString().split(",");
+                setParticipants(currentParticipants);
             }
-            addParticipant(myIP.toString());
+
+            // Add ourself to the participants
+            addParticipant(myIP);
         }
 
-        // Add caller to participants with LAST_PORT + 2 of participants
-        // int lastFreePort = participants[getLastParticipant()].toInt() + 1;
-        // addParticipant(arr["sender-ip"].toString(), lastFreePort);
+        // Add caller to participant list
+        addParticipant(arr["sender-ip"].toString());
 
-        //qDebug() << participants[getLastParticipant()];
-        // Send update-participants command to all participants
-        // client->updateParticipants();
+        // Send update-participants command to all participants, excluding ourselves
+        client->sendUpdateToParticipants(participants, myIP);
     }
 
     if(command == "update-participants"){
         // Set local participant array to received one
-        // setParticipants((QVariantMap)arr["participants"]);
+        setParticipants(arr["participants"].toString().split(","));
     }
 }
 
 void MainWindow::on_callButton_clicked()
 {
-    /*QVariantMap arr;
-    arr["command"] = "initiate-call";
+    // Construct request
+    QVariantMap request;
+    request["command"] = "initiate-call";
     QHostAddress ip(ui->ipField->text());
-    client->sendMessage(arr, ip);
-    //videoClient->addListenPort(5000, addVideoToInterface());
-    addParticipant("130.240..." + QString::number(qrand()));*/
 
-    QHostInfo::lookupHost(ui->ipField->text(), this, SLOT(hostLookupResult(QHostInfo)));
+    // Send call initiation command
+    client->sendMessage(request, ip);
+}
+
+void MainWindow::couldNotConnectToCallee(QString error)
+{
+    QMessageBox msgBox;
+    msgBox.setText("Could not contact callee: " + error);
+    msgBox.exec();
 }
 
 void MainWindow::on_messageField_textChanged(const QString &arg1)
@@ -125,26 +124,20 @@ void MainWindow::on_messageField_textChanged(const QString &arg1)
     videoServer->setTextOverlay(arg1);
 }
 
-// Add client
-/*void MainWindow::on_pushButton_2_clicked()
-{
-    QHostAddress ip(ui->ipField->text());
-    videoServer->addNewClient(ip);
-}*/
-
 /* ---- Participant list methods ---- */
 void MainWindow::addParticipant(QString ip)
 {
-    if(true){
-        // Insert IP at end of participant list
-        participants.insert(ip, participants.count() +1);
+    if(!participants.contains(ip)){
+        participants.append(ip);
 
         // Start sending and listening to new newly added participant
-        if(ip != myIP.toString()){
-            videoClient->addListenPort(5000, addVideoToInterface());
-            //videoServer->addListenPort(slot, ui->videoWidget->winId());
+        if(ip != myIP){
+            int sendPort = getPortNumberForConnectionBetweenSlots(mySlot(), participants.indexOf(ip));
+            int listenPort = getPortNumberForConnectionBetweenSlots(participants.indexOf(ip), mySlot());
+            videoServer->sendToNewClient(ip, sendPort);
+            videoClient->addListenPort(listenPort, addVideoToInterface());
         }
-        qDebug() << "Did add participant";
+        qDebug() << "Added participant";
     } else {
         qDebug() << "Did not add: Participant already in list";
     }
@@ -152,49 +145,41 @@ void MainWindow::addParticipant(QString ip)
 
 void MainWindow::removeParticipant(QString ip)
 {
-    if(participants[ip]){
-        participants.remove(ip);
+    if(participants.removeOne(ip)){
         qDebug() << "Did remove participant";
     } else {
         qDebug() << "Could not remove: Participant not in list";
     }
 }
 
-void MainWindow::setParticipants(QMap<QString, int> newParticipantList)
+/**
+ * @brief Sets the local participant list to a received one. This triggers new connections to be set up.
+ * @param newParticipantList
+ */
+void MainWindow::setParticipants(QStringList newParticipantList)
 {
-    participants = newParticipantList;
-    QMapIterator<QString, int> i(participants);
-    while(i.hasNext()){
-        i.next();
-        if(i.key() == myIP.toString()){
-            //videoServer->addNewClient();
+    if(participants.isEmpty()){
+        foreach(QString ip, newParticipantList){
+            if(!participants.contains(ip)) {
+                addParticipant(ip);
+            }
         }
+    } else {
+        qDebug() << "Did not set local participant list. Local list is not empty";
     }
 }
 
-QString MainWindow::getLastParticipant()
-{
-    QMapIterator<QString, int> i(participants);
-    QString keyWithHighestIP;
-    int ip = 0;
-    while(i.hasNext()){
-        i.next();
-        if(i.value() > ip){
-            ip = i.value();
-            keyWithHighestIP = i.key();
-        }
-    }
-    return keyWithHighestIP;
+/**
+ * @brief Get the slot of the current client in the participant list
+ * @return The slot (0,1,2...)
+ */
+int MainWindow::mySlot(){
+    return participants.indexOf(myIP);
 }
 
-void MainWindow::on_showCamera_clicked()
-{
-    if(videoServer == NULL){
-        videoServer = new VideoServer();
-        ui->showCamera->hide();
-    }
-}
-
+/**
+ * @brief Recalculate and set width and center the application window on the screen
+ */
 void MainWindow::rescaleWindow()
 {
     int newWidth = 370+participants.count()*480;

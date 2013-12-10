@@ -9,6 +9,7 @@
 #include "videoclient.h"
 #include <QHostInfo>
 #include <QHostAddress>
+#include <QStringList>
 
 namespace Ui {
 class MainWindow;
@@ -26,8 +27,7 @@ private slots:
     void serverDidReceiveMessage(QString);
     void on_messageField_textChanged(const QString &arg1);
     void on_callButton_clicked();
-    void on_showCamera_clicked();
-    void hostLookupResult(QHostInfo);
+    void couldNotConnectToCallee(QString);
 
 private:
     Ui::MainWindow *ui;
@@ -37,17 +37,17 @@ private:
     VideoServer *videoServer;
     VideoClient *videoClient;
     void delegateMessage(QVariantMap);
-    QMap<QString, int> participants;
-    QHostAddress myIP;
+    QStringList participants;
+    QString myIP;
     WId addVideoToInterface();
     void rescaleWindow();
     int getPortNumberForConnectionBetweenSlots(int, int);
+    int mySlot();
 
     //Participant methods
     void addParticipant(QString);
     void removeParticipant(QString);
-    void setParticipants(QMap<QString, int>);
-    QString getLastParticipant();
+    void setParticipants(QStringList);
 };
 
 #endif // MAINWINDOW_H
