@@ -1,5 +1,6 @@
 #include "videoserver.h"
 #include <gst/gst.h>
+#include <gst/interfaces/xoverlay.h>
 
 #define LISTEN_PORT 5000
 #define CLIENT_RECEIVE_PORT 6002
@@ -11,16 +12,21 @@
 VideoServer::VideoServer(QObject *parent) :
     QObject(parent)
 {  
+    gst_init (NULL, NULL);
+}
+
+void VideoServer::init(WId windowID)
+{
     GstElement *source, *sink, *capsfilter, *tee, *q1, *q2, *encoder, *rtpPayloader;
     GstCaps *caps;
-    gst_init (NULL, NULL);
+
     pipeline = gst_pipeline_new ("Ma1n Spr4ying H0se");
 
     // Create the elements
-    source = gst_element_factory_make ("videotestsrc", NULL);
+    source = gst_element_factory_make ("autovideosrc", NULL);
     encoder = gst_element_factory_make ("x264enc", NULL);
     overlay = gst_element_factory_make("textoverlay", NULL);
-    sink = gst_element_factory_make ("autovideosink", NULL);
+    sink = gst_element_factory_make ("xvimagesink", NULL);
     outboundSink = gst_element_factory_make ("multiudpsink", NULL);
     capsfilter = gst_element_factory_make ("capsfilter", NULL);
     tee = gst_element_factory_make("tee", NULL);
@@ -40,6 +46,7 @@ VideoServer::VideoServer(QObject *parent) :
     // Set some attributes
     g_object_set(G_OBJECT(overlay), "font-desc","Sans 24", "text","Kamura 1", "valign","top", "halign","left", "shaded-background", true, NULL);
     g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
+    g_object_set(G_OBJECT(sink), "force-aspect-ratio", true, "sync", false, NULL);
     g_object_set(G_OBJECT(encoder), "speed-preset", 1, "pass", 0, "quantizer", 20, "tune", 0x00000004, NULL);
     //g_object_set(G_OBJECT(outboundSink), "clients", "130.240.53.175:6002", NULL);
 
@@ -88,6 +95,12 @@ VideoServer::VideoServer(QObject *parent) :
     // RTP-Payloader --> OutboundSink
     gst_element_link_pads(rtpPayloader, "src", outboundSink, "sink");
 
+    if(sink && GST_IS_X_OVERLAY(sink)){
+           gst_x_overlay_set_window_handle(GST_X_OVERLAY(sink),windowID);
+    } else {
+        qDebug() << "It's not an xoverlay thing!";
+    }
+
     gst_element_set_state (pipeline, GST_STATE_PLAYING);
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
 }
@@ -97,37 +110,10 @@ void VideoServer::setTextOverlay(QString text){
     g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }
 
-void VideoServer::addNewClient(QString ip, int port)
+void VideoServer::sendToNewClient(QString ip, int port)
 {
     // Send to the new client
     g_signal_emit_by_name(outboundSink, "add", ip.toStdString().c_str(), port+1, NULL);
-
-    //Receive from the new client
-
-    // Request a new videomixer sink pad and connec it to a new udpsrc;
-    GstPad *newMixerpad;
-    GstElement *src, *capsfilter;
-    gchar *newMixerPadName;
-    newMixerpad = gst_element_get_request_pad (mixer, "sink_%d");
-    newMixerPadName = gst_pad_get_name (newMixerpad);
-
-    capsfilter = gst_element_factory_make ("capsfilter", NULL);
-
-    QString str("udpsrc port="+ QString::number(port) + " ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! ffmpegcolorspace ! queue leaky=upstream");
-    // GError *err = NULL;
-    GstElement *clientBin = gst_parse_bin_from_description(str.toStdString().c_str(), true, NULL);
-    QString clientBinName("client " + ip);
-    g_object_set(G_OBJECT(clientBin), "name", clientBinName.toStdString().c_str(), NULL);
-
-    gst_bin_add_many(GST_BIN(pipeline), clientBin, NULL);
-    gst_element_link_pads(clientBin, "src", mixer, newMixerPadName);
-
-    g_object_set(G_OBJECT(newMixerpad),"border-alpha", 0, NULL);
-    g_object_set(G_OBJECT(newMixerpad),"left", -50, NULL);
-    g_object_set(G_OBJECT(newMixerpad),"top", -50, NULL);
-
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
-    GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline-after-client-add");
 }
 
 void VideoServer::removeClient(QString ip)

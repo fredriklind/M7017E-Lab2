@@ -7,12 +7,8 @@
 #include <gst/gst.h>
 #include "videoserver.h"
 #include "videoclient.h"
-
-typedef enum {
-    MAIN_STATE_IDLE     =0,
-    MAIN_STATE_CLIENT   =1,
-    MAIN_STATE_SERVER   =2
-} MainState;
+#include <QHostInfo>
+#include <QHostAddress>
 
 namespace Ui {
 class MainWindow;
@@ -30,8 +26,8 @@ private slots:
     void serverDidReceiveMessage(QString);
     void on_messageField_textChanged(const QString &arg1);
     void on_callButton_clicked();
-
     void on_showCamera_clicked();
+    void hostLookupResult(QHostInfo);
 
 private:
     Ui::MainWindow *ui;
@@ -41,15 +37,16 @@ private:
     VideoServer *videoServer;
     VideoClient *videoClient;
     void delegateMessage(QVariantMap);
-    MainState currentMainState;
-    QVariantMap participants;
+    QMap<QString, int> participants;
     QHostAddress myIP;
     WId addVideoToInterface();
+    void rescaleWindow();
+    int getPortNumberForConnectionBetweenSlots(int, int);
 
     //Participant methods
-    void addParticipant(QString, int);
+    void addParticipant(QString);
     void removeParticipant(QString);
-    void setParticipants(QVariantMap);
+    void setParticipants(QMap<QString, int>);
     QString getLastParticipant();
 };
 

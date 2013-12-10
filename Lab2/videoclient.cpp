@@ -11,8 +11,8 @@ VideoClient::VideoClient(QObject *parent) :
 void VideoClient::addListenPort(int port, WId windowID)
 {
     gst_init (NULL, NULL);
-    QString str("udpsrc port="+ QString::number(port) + " ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! xvimagesink force-aspect-ratio=true name=output");
-    //QString str("videotestsrc ! xvimagesink force-aspect-ratio=true name=output");
+    //QString str("udpsrc port="+ QString::number(port) + " ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! xvimagesink force-aspect-ratio=true name=output");
+    QString str("videotestsrc ! xvimagesink force-aspect-ratio=true name=output sync=true");
     // GError *err = NULL;
     GstElement *clientBin = gst_parse_bin_from_description(str.toStdString().c_str(), true, NULL);
 

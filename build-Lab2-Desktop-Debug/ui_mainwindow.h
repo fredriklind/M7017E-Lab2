@@ -47,7 +47,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(907, 359);
+        MainWindow->resize(673, 454);
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         sizePolicy.setHorizontalStretch(1);
         sizePolicy.setVerticalStretch(1);
@@ -124,7 +124,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menu = new QMenuBar(MainWindow);
         menu->setObjectName(QStringLiteral("menu"));
-        menu->setGeometry(QRect(0, 0, 907, 25));
+        menu->setGeometry(QRect(0, 0, 673, 25));
         MainWindow->setMenuBar(menu);
 
         retranslateUi(MainWindow);

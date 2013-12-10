@@ -4,15 +4,17 @@
 #include <QObject>
 #include <gst/gst.h>
 #include <QHostAddress>
+#include <QWidget>
 
 class VideoServer : public QObject
 {
     Q_OBJECT
 public:
     explicit VideoServer(QObject *parent = 0);
-    void addNewClient(QString, int);
+    void sendToNewClient(QString, int);
     void removeClient(QString);
     void setTextOverlay(QString);
+    void init(WId);
 
 private:
     GstElement *pipeline, *outboundSink, *overlay, *mixer;
