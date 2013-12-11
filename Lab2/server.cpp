@@ -8,6 +8,10 @@
 
 #define COMMUNICATION_PORT 5000
 
+/**
+ * @brief Responsible for receiving text messages on the COMMUNICATION_PORT
+ * @param parent
+ */
 Server::Server(QObject *parent) :
     QObject(parent)
 {
@@ -16,6 +20,9 @@ Server::Server(QObject *parent) :
             this, SLOT(on_newConnection()));
 }
 
+/**
+ * @brief Starts listening on the COMMUNICATION_PORT
+ */
 void Server::listen()
 {
     if(!server->listen(QHostAddress::Any,COMMUNICATION_PORT))
@@ -24,6 +31,9 @@ void Server::listen()
     }
 }
 
+/**
+ * @brief Fired when a new connection is detected. Sets up connections for disconnection and read signals.
+ */
 void Server::on_newConnection()
 {
     socket = server->nextPendingConnection();
@@ -37,6 +47,11 @@ void Server::on_newConnection()
             this, SLOT(on_readyRead()));
 }
 
+/**
+ * @brief Fired when there is data to read on the socket. Parses JSON string messge into an array, adds metadata
+ * for the sender, then compresses it back into a JSON string and signals observers. It has to convert it back to a
+ * JSON string because it was not possible to emit arrays (I think).
+ */
 void Server::on_readyRead()
 {
         // note that QByteArray can be casted to char * and const char *
@@ -64,6 +79,9 @@ void Server::on_readyRead()
         emit didReceiveMessage(str2);
 }
 
+/**
+ * @brief Free resources and delete the socket on disconnect.
+ */
 void Server::on_disconnected()
 {
     disconnect(socket, SIGNAL(disconnected()));

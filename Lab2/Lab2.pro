@@ -14,14 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        videocontainer.cpp \
     client.cpp \
     server.cpp \
     videoserver.cpp \
     videoclient.cpp
 
 HEADERS  += mainwindow.h \
-         videocontainer.h \
     client.h \
     server.h \
     videoserver.h \

@@ -14,7 +14,7 @@ public:
     explicit Client(QObject *parent = 0);
     void sendMessage(QVariantMap, QHostAddress);
     void sendUpdateToParticipants(QStringList, QString);
-    QVariantMap messageBuffer;
+    QVariantMap messageBuffer; /**< This is set when someone wants to send a message, and the used when that message really can be sent. */
 signals:
     void couldNotConnect(QString);
 

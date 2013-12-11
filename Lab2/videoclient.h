@@ -14,7 +14,7 @@ public:
     void addListenPort(int, WId);
     void removeListenPort(int);
 private:
-     QMap<int, GstElement*> listenPorts;
+     QMap<int, GstElement*> listenPorts; /**< List of ports and their corresponding GStElement. Not currently used */
 
 signals:
     

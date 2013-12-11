@@ -9,12 +9,20 @@
 #define VIDEO_HEIGHT 480
 #define VIDEO_FRAMERATE 30
 
+/**
+ * @brief Responsible for showing the local video feed and sending that feed to other VideoClients
+ * @param parent
+ */
 VideoServer::VideoServer(QObject *parent) :
     QObject(parent)
 {  
     gst_init (NULL, NULL);
 }
 
+/**
+ * @brief Initialize the VideoServer. Sets up a new pipeline and sets up the local video feed to be shown, with no sending to external clients.
+ * @param windowID
+ */
 void VideoServer::init(WId windowID)
 {
     GstElement *source, *sink, *capsfilter, *tee, *q1, *q2, *encoder, *rtpPayloader;
@@ -33,8 +41,6 @@ void VideoServer::init(WId windowID)
     q1 = gst_element_factory_make("queue", NULL);
     q2 = gst_element_factory_make("queue", NULL);
     rtpPayloader = gst_element_factory_make("rtph264pay", NULL);
-
-    //print_pad_capabilities(source, (gchar*)"src");
 
     // Setup caps
     caps = gst_caps_new_simple ("video/x-raw-yuv",
@@ -105,11 +111,20 @@ void VideoServer::init(WId windowID)
     GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS, "pipeline");
 }
 
+/**
+ * @brief Sets the text overlay on the video output stream
+ * @param text The text to set the overlay to
+ */
 void VideoServer::setTextOverlay(QString text){
     const char* str = text.toHtmlEscaped().toUtf8();
     g_object_set(G_OBJECT(overlay), "text", str, NULL);
 }
 
+/**
+ * @brief Start sending the video feed to a new client
+ * @param ip The IP to send to
+ * @param port The port to send on
+ */
 void VideoServer::sendToNewClient(QString ip, int port)
 {
     // Send to the new client
@@ -117,12 +132,20 @@ void VideoServer::sendToNewClient(QString ip, int port)
     qDebug() << "Now sending to " + ip + " on port " + QString::number(port);
 }
 
+/**
+ * @brief Stop sending to a certain client. Not currently used.
+ * @param ip The IP to stop sending to.
+ */
 void VideoServer::removeClient(QString ip)
 {
     //g_signal_emit_by_name(outboundSink, "remove", ip.toStdString().c_str(), QString(port).toStdString().c_str(), NULL);
 }
 
-/* Shows the CURRENT capabilities of the requested pad in the given element */
+/**
+ * @brief Debug method for showing pad caps
+ * @param element
+ * @param pad_name
+ */
 void VideoServer::print_pad_capabilities (GstElement *element, gchar *pad_name) {
   GstPad *pad = NULL;
   GstCaps *caps = NULL;
@@ -146,6 +169,11 @@ void VideoServer::print_pad_capabilities (GstElement *element, gchar *pad_name) 
   gst_object_unref (pad);
 }
 
+/**
+ * @brief Debug method for showing pad caps
+ * @param caps
+ * @param pfx
+ */
 void VideoServer::print_caps (const GstCaps * caps, const gchar * pfx) {
   guint i;
 
@@ -168,6 +196,13 @@ void VideoServer::print_caps (const GstCaps * caps, const gchar * pfx) {
   }
 }
 
+/**
+ * @brief Debug method for showing pad caps
+ * @param field
+ * @param value
+ * @param pfx
+ * @return
+ */
 gboolean VideoServer::print_field (GQuark field, const GValue * value, gpointer pfx) {
   gchar *str = gst_value_serialize (value);
 

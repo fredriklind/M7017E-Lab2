@@ -26,7 +26,12 @@
 // GST_DEBUG=2,udpsrc:5 gst-launch-0.10 -v udpsrc port=6002 ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
 // gst-launch-0.10 videotestsrc ! application/x-rtp, payload=127 ! rtph264depay ! ffdec_h264 ! autovideosink
 
-MainWindow::MainWindow(QWidget *parent) :
+/**
+ * @brief Sets up the interface, starts text communication by starting a Client and a Server. Also starts the video
+ * communication part by starting a videoClient.
+ * @param parent
+ */
+MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -78,6 +83,10 @@ MainWindow::MainWindow(QWidget *parent) :
     myTempSlot = 0;
 }
 
+/**
+ * @brief Adds a new QWidget to the video area of the interface
+ * @return The Window ID of the newly inserted QWidget
+ */
 WId MainWindow::addVideoToInterface()
 {
     QWidget *w = new QWidget();
@@ -87,6 +96,9 @@ WId MainWindow::addVideoToInterface()
     return w->winId();
 }
 
+/**
+ * @brief Hides and shows the participant list window
+ */
 void MainWindow::toggleParticipantListWindow()
 {
     qDebug() << "Testar";
@@ -97,6 +109,10 @@ void MainWindow::toggleParticipantListWindow()
     }
 }
 
+/**
+ * @brief This slot is called when the text communication server receives a message, it processes the message and delegates it.
+ * @param str The string that was received from the sending Client
+ */
 void MainWindow::serverDidReceiveMessage(QString str)
 {
     QByteArray ba(str.toStdString().c_str());
@@ -107,6 +123,12 @@ void MainWindow::serverDidReceiveMessage(QString str)
     delegateMessage(arr);
 }
 
+/**
+ * @brief This methods handles the command that the Server has received. There are two types of commands that can be received.
+ * "initiate-call" is received when another Client wants to start a conversation. "update-participants" is received when another
+ * Client has new information about the participants in the call.
+ * @param arr The array containing the command, and its parameters
+ */
 void MainWindow::delegateMessage(QVariantMap arr)
 {
     QString command = arr["command"].toString();
@@ -137,6 +159,11 @@ void MainWindow::delegateMessage(QVariantMap arr)
     }
 }
 
+/**
+ * @brief Called when the callbutton is clicked. Checks if the IP provided in the ipField is valid (inside the sendMessage method),
+ * then constructs an "initiate-call" command and sends it to that IP. If we are currently in a call
+ * the current participants of the call are included in the command.
+ */
 void MainWindow::on_callButton_clicked()
 {
     if(ui->ipField->text() == "127.0.0.1" || ui->ipField->text() == "localhost"){
@@ -161,6 +188,10 @@ void MainWindow::on_callButton_clicked()
     qDebug() << participants;
 }
 
+/**
+ * @brief Called when there was an error connecting to the IP provided in the ipField, shows an alert box.
+ * @param error
+ */
 void MainWindow::couldNotConnectToCallee(QString error)
 {
     QMessageBox msgBox;
@@ -168,12 +199,20 @@ void MainWindow::couldNotConnectToCallee(QString error)
     msgBox.exec();
 }
 
+/**
+ * @brief Tells the VideoServer to change the text overlay on the video that is being sent to the text in the
+ * messageField field.
+ * @param arg1 The current text in the field.
+ */
 void MainWindow::on_messageField_textChanged(const QString &arg1)
 {
     videoServer->setTextOverlay(arg1);
 }
 
-/* ---- Participant list methods ---- */
+/**
+ * @brief Adds a participant to the local participant list and sets up listening and sending to and from that participant.
+ * @param ip The ip to add to the local participant list.
+ */
 void MainWindow::addParticipant(QString ip)
 {
     if(!participants.contains(ip)){
@@ -191,6 +230,10 @@ void MainWindow::addParticipant(QString ip)
     }
 }
 
+/**
+ * @brief Removes a participant from the local participant list. Not currently used.
+ * @param ip The IP to remove from the local participant list.
+ */
 void MainWindow::removeParticipant(QString ip)
 {
     if(participants.removeOne(ip)){
@@ -243,12 +286,20 @@ void MainWindow::rescaleWindow()
     }
 }
 
-// Get the port
+/**
+ * @brief Calculates port mapping based on list positions. Slots are list positions with their alloted SLOT_SIZE.
+ * @param fromSlot The sending slot.
+ * @param toSlot The receiving slot.
+ * @return The port that should be used for the communication from fromSlot to toSlot.
+ */
 int MainWindow::getPortNumberForConnectionBetweenSlots(int fromSlot, int toSlot)
 {
     return BASE_PORT + SLOT_SIZE*fromSlot + toSlot;
 }
 
+/**
+ * @brief Frees the ui from memory
+ */
 MainWindow::~MainWindow()
 {
     delete ui;

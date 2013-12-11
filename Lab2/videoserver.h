@@ -17,7 +17,7 @@ public:
     void init(WId);
 
 private:
-    GstElement *pipeline, *outboundSink, *overlay, *mixer;
+    GstElement *pipeline, *outboundSink, *overlay, *mixer; /**< The elements that need to be used outside the init() method */
     void print_caps(const GstCaps*, const gchar*);
     void print_pad_capabilities (GstElement *, gchar *);
     static gboolean print_field(GQuark , const GValue * , gpointer);
