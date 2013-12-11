@@ -15,6 +15,8 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include <QTcpSocket>
+#include <QDialog>
+#include <QListWidget>
 
 #define COMMUNICATION_PORT 5000
 #define BASE_PORT 6000
@@ -47,7 +49,17 @@ MainWindow::MainWindow(QWidget *parent) :
             myIP = address.toString();
     }
 
-    ui->label->setToolTip("Your IP: " + myIP);
+    ui->ipField->setToolTip("Your IP: " + myIP);
+    ui->ipField->setPlaceholderText("IP Address");
+    ui->messageField->setPlaceholderText("Overlay message");
+    this->setWindowTitle("");
+    QDialog *dialog = new QDialog;
+    dialog->setContentsMargins(20,20,20,20);
+    QListWidget *participantList = new QListWidget(dialog);
+    participantList->setBaseSize(QSize(180,300));
+    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    dialog->adjustSize();
+    dialog->show();
 
     // Setup video layout
     QHBoxLayout *layout = new QHBoxLayout;

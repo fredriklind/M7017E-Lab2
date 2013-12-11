@@ -13,16 +13,13 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -33,52 +30,56 @@ class Ui_MainWindow
 public:
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
+    QWidget *videoWidget;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer_2;
-    QLabel *label;
     QLineEdit *ipField;
     QPushButton *callButton;
-    QLabel *label_2;
     QLineEdit *messageField;
-    QCheckBox *checkBox;
     QSpacerItem *horizontalSpacer;
-    QStatusBar *statusBar;
     QMenuBar *menu;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(907, 96);
+        MainWindow->resize(673, 454);
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHorizontalStretch(1);
+        sizePolicy.setVerticalStretch(1);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setLayoutDirection(Qt::LeftToRight);
         verticalLayout = new QVBoxLayout(centralWidget);
-        verticalLayout->setSpacing(6);
+        verticalLayout->setSpacing(10);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
+        videoWidget = new QWidget(centralWidget);
+        videoWidget->setObjectName(QStringLiteral("videoWidget"));
+        sizePolicy.setHeightForWidth(videoWidget->sizePolicy().hasHeightForWidth());
+        videoWidget->setSizePolicy(sizePolicy);
+
+        verticalLayout->addWidget(videoWidget);
+
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         horizontalLayout->setSizeConstraint(QLayout::SetNoConstraint);
-        horizontalLayout->setContentsMargins(5, -1, 5, -1);
+        horizontalLayout->setContentsMargins(10, 0, 10, 10);
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer_2);
 
-        label = new QLabel(centralWidget);
-        label->setObjectName(QStringLiteral("label"));
-
-        horizontalLayout->addWidget(label);
-
         ipField = new QLineEdit(centralWidget);
         ipField->setObjectName(QStringLiteral("ipField"));
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(ipField->sizePolicy().hasHeightForWidth());
+        ipField->setSizePolicy(sizePolicy1);
 
         horizontalLayout->addWidget(ipField);
 
@@ -87,25 +88,12 @@ public:
 
         horizontalLayout->addWidget(callButton);
 
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        horizontalLayout->addWidget(label_2);
-
         messageField = new QLineEdit(centralWidget);
         messageField->setObjectName(QStringLiteral("messageField"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(messageField->sizePolicy().hasHeightForWidth());
         messageField->setSizePolicy(sizePolicy1);
 
         horizontalLayout->addWidget(messageField);
-
-        checkBox = new QCheckBox(centralWidget);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-
-        horizontalLayout->addWidget(checkBox);
 
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -115,12 +103,9 @@ public:
         verticalLayout->addLayout(horizontalLayout);
 
         MainWindow->setCentralWidget(centralWidget);
-        statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        MainWindow->setStatusBar(statusBar);
         menu = new QMenuBar(MainWindow);
         menu->setObjectName(QStringLiteral("menu"));
-        menu->setGeometry(QRect(0, 0, 907, 25));
+        menu->setGeometry(QRect(0, 0, 673, 22));
         MainWindow->setMenuBar(menu);
 
         retranslateUi(MainWindow);
@@ -131,11 +116,8 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
-        ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
+        ipField->setText(QString());
         callButton->setText(QApplication::translate("MainWindow", "Call", 0));
-        label_2->setText(QApplication::translate("MainWindow", "Message", 0));
-        checkBox->setText(QApplication::translate("MainWindow", "Filter", 0));
     } // retranslateUi
 
 };

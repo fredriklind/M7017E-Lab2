@@ -80,13 +80,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>IP Addres:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLineEdit" name="ipField">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -95,7 +88,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>127.0.0.1</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -103,13 +96,6 @@
        <widget class="QPushButton" name="callButton">
         <property name="text">
          <string>Call</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Message</string>
         </property>
        </widget>
       </item>
@@ -146,7 +132,7 @@
      <x>0</x>
      <y>0</y>
      <width>673</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
