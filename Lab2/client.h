@@ -7,6 +7,9 @@
 
 class QTcpSocket;
 
+/**
+ * @brief Handles sending of text communication.
+ */
 class Client : public QObject
 {
     Q_OBJECT

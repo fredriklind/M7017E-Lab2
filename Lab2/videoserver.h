@@ -6,6 +6,9 @@
 #include <QHostAddress>
 #include <QWidget>
 
+/**
+ * @brief Handles sending of video communication.
+ */
 class VideoServer : public QObject
 {
     Q_OBJECT

@@ -6,6 +6,9 @@
 #include <gst/gst.h>
 #include <QWidget>
 
+/**
+ * @brief Handles receiving of video communicatioin
+ */
 class VideoClient : public QObject
 {
     Q_OBJECT

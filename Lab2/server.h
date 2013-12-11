@@ -5,6 +5,9 @@
 class QTcpServer;
 class QTcpSocket;
 
+/**
+ * @brief Handles receiving of text communication
+ */
 class Server : public QObject
 {
     Q_OBJECT
