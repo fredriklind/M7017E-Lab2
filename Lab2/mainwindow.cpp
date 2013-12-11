@@ -16,7 +16,7 @@
 #include <QGuiApplication>
 #include <QTcpSocket>
 #include <QDialog>
-#include <QListWidget>
+#include <QShortcut>
 
 #define COMMUNICATION_PORT 5000
 #define BASE_PORT 6000
@@ -49,17 +49,22 @@ MainWindow::MainWindow(QWidget *parent) :
             myIP = address.toString();
     }
 
+    // Setup the ui
     ui->ipField->setToolTip("Your IP: " + myIP);
     ui->ipField->setPlaceholderText("IP Address");
     ui->messageField->setPlaceholderText("Overlay message");
-    this->setWindowTitle("");
-    QDialog *dialog = new QDialog;
-    dialog->setContentsMargins(20,20,20,20);
-    QListWidget *participantList = new QListWidget(dialog);
-    participantList->setBaseSize(QSize(180,300));
-    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    dialog->adjustSize();
-    dialog->show();
+    this->setWindowTitle(" ");
+
+    // Setup participant list
+    participantListWindow = new QDialog;
+    participantListWindow->setContentsMargins(20,20,20,20);
+    participantListWindow->setWindowTitle("Participants");
+    participantListWidget = new QListWidget(participantListWindow);
+    participantListWindow->setFixedSize(210, 240);
+    participantListWidget->setFixedSize(210, 240);
+    participantListWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    participantListWidget->addItem(myIP + " (Thats you!)");
+    QShortcut *sq = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_P), this, SLOT(toggleParticipantListWindow()));
 
     // Setup video layout
     QHBoxLayout *layout = new QHBoxLayout;
@@ -68,8 +73,9 @@ MainWindow::MainWindow(QWidget *parent) :
     videoServer->init(addVideoToInterface());
 
     rescaleWindow();
-
     participants = QStringList();
+
+    myTempSlot = 0;
 }
 
 WId MainWindow::addVideoToInterface()
@@ -81,10 +87,22 @@ WId MainWindow::addVideoToInterface()
     return w->winId();
 }
 
+void MainWindow::toggleParticipantListWindow()
+{
+    qDebug() << "Testar";
+    if(participantListWindow->isVisible()){
+        participantListWindow->hide();
+    } else {
+        participantListWindow->show();
+    }
+}
+
 void MainWindow::serverDidReceiveMessage(QString str)
 {
     QByteArray ba(str.toStdString().c_str());
     QJsonObject obj = QJsonDocument::fromJson(ba).object();
+    qDebug() << "RECEIVED THIS: ";
+    qDebug() << QJsonDocument::fromJson(ba).toJson();
     QVariantMap arr = obj.toVariantMap();
     delegateMessage(arr);
 }
@@ -121,13 +139,26 @@ void MainWindow::delegateMessage(QVariantMap arr)
 
 void MainWindow::on_callButton_clicked()
 {
+    if(ui->ipField->text() == "127.0.0.1" || ui->ipField->text() == "localhost"){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error!");
+        msgBox.setText("Nope, you can't call yourself. Sorry.");
+        msgBox.exec();
+        return;
+    }
+
     // Construct request
     QVariantMap request;
     request["command"] = "initiate-call";
+    if(!participants.isEmpty()){
+        request["participants"] = participants.join(",");
+    }
     QHostAddress ip(ui->ipField->text());
 
+    qDebug() << participants;
     // Send call initiation command
     client->sendMessage(request, ip);
+    qDebug() << participants;
 }
 
 void MainWindow::couldNotConnectToCallee(QString error)
@@ -146,18 +177,17 @@ void MainWindow::on_messageField_textChanged(const QString &arg1)
 void MainWindow::addParticipant(QString ip)
 {
     if(!participants.contains(ip)){
-        participants.append(ip);
+    participants.append(ip);
 
-        // Start sending and listening to new newly added participant
-        if(ip != myIP){
-            int sendPort = getPortNumberForConnectionBetweenSlots(mySlot(), participants.indexOf(ip));
-            int listenPort = getPortNumberForConnectionBetweenSlots(participants.indexOf(ip), mySlot());
-            videoServer->sendToNewClient(ip, sendPort);
-            videoClient->addListenPort(listenPort, addVideoToInterface());
-        }
-        qDebug() << "Added participant";
-    } else {
-        qDebug() << "Did not add: Participant already in list";
+    // Start sending and listening to new newly added participant
+    if(ip != myIP){
+        int sendPort = getPortNumberForConnectionBetweenSlots(mySlot(), participants.indexOf(ip));
+        int listenPort = getPortNumberForConnectionBetweenSlots(participants.indexOf(ip), mySlot());
+        videoServer->sendToNewClient(ip, sendPort);
+        videoClient->addListenPort(listenPort, addVideoToInterface());
+        participantListWidget->addItem(ip);
+    }
+    qDebug() << "Added participant" + ip;
     }
 }
 
@@ -176,14 +206,14 @@ void MainWindow::removeParticipant(QString ip)
  */
 void MainWindow::setParticipants(QStringList newParticipantList)
 {
-    if(participants.isEmpty()){
-        foreach(QString ip, newParticipantList){
-            if(!participants.contains(ip)) {
-                addParticipant(ip);
-            }
+    myTempSlot = newParticipantList.indexOf(myIP);
+    if(myTempSlot == -1){
+        myTempSlot = newParticipantList.count();
+    }
+    foreach(QString ip, newParticipantList){
+        if(!participants.contains(ip)) {
+            addParticipant(ip);
         }
-    } else {
-        qDebug() << "Did not set local participant list. Local list is not empty";
     }
 }
 
@@ -195,8 +225,8 @@ int MainWindow::mySlot(){
     if(participants.contains(myIP)){
         return participants.indexOf(myIP);
     } else {
-        qDebug() << "Im not in the participants list!";
-        return participants.count();
+        qDebug() << "Im not in the participants list, returning temp slot!";
+        return myTempSlot;
     }
 }
 

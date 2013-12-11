@@ -43,12 +43,15 @@ void Client::sendMessage(QVariantMap arr, QHostAddress ip)
 
 void Client::internalSendMessage(){
     // Convert dictionary to JSON object, then to JSON-string
-    if(!messageBuffer.isEmpty()){
+    if(!messageBuffer.isEmpty() && socket->waitForConnected(4000)){
         QVariantMap arr = messageBuffer;
         QJsonDocument doc;
         QJsonObject obj = QJsonObject::fromVariantMap(arr);
         doc.setObject(obj);
         QString message(doc.toJson().replace("\n",""));
+
+        qDebug() << "SENDING THIS: ";
+        qDebug() << doc.toJson();
 
         // Send string!
         QString data = message + "\n";
@@ -70,6 +73,7 @@ void Client::sendUpdateToParticipants(QStringList participants, QString myIP)
     foreach(QString ip, participants){
         if(ip != myIP){
             sendMessage(request, QHostAddress(ip));
+            socket->waitForDisconnected();
         }
     }
 }

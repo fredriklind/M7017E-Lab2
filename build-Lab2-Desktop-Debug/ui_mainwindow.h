@@ -15,7 +15,6 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
@@ -34,10 +33,8 @@ public:
     QWidget *videoWidget;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer_2;
-    QLabel *label;
     QLineEdit *ipField;
     QPushButton *callButton;
-    QLabel *label_2;
     QLineEdit *messageField;
     QSpacerItem *horizontalSpacer;
     QMenuBar *menu;
@@ -76,11 +73,6 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_2);
 
-        label = new QLabel(centralWidget);
-        label->setObjectName(QStringLiteral("label"));
-
-        horizontalLayout->addWidget(label);
-
         ipField = new QLineEdit(centralWidget);
         ipField->setObjectName(QStringLiteral("ipField"));
         QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -95,11 +87,6 @@ public:
         callButton->setObjectName(QStringLiteral("callButton"));
 
         horizontalLayout->addWidget(callButton);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        horizontalLayout->addWidget(label_2);
 
         messageField = new QLineEdit(centralWidget);
         messageField->setObjectName(QStringLiteral("messageField"));
@@ -118,7 +105,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menu = new QMenuBar(MainWindow);
         menu->setObjectName(QStringLiteral("menu"));
-        menu->setGeometry(QRect(0, 0, 673, 25));
+        menu->setGeometry(QRect(0, 0, 673, 22));
         MainWindow->setMenuBar(menu);
 
         retranslateUi(MainWindow);
@@ -129,10 +116,8 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        label->setText(QApplication::translate("MainWindow", "IP Addres:", 0));
-        ipField->setText(QApplication::translate("MainWindow", "127.0.0.1", 0));
+        ipField->setText(QString());
         callButton->setText(QApplication::translate("MainWindow", "Call", 0));
-        label_2->setText(QApplication::translate("MainWindow", "Message", 0));
     } // retranslateUi
 
 };

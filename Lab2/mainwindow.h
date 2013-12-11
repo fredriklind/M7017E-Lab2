@@ -10,6 +10,7 @@
 #include <QHostInfo>
 #include <QHostAddress>
 #include <QStringList>
+#include <QListWidget>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,7 @@ private slots:
     void on_messageField_textChanged(const QString &arg1);
     void on_callButton_clicked();
     void couldNotConnectToCallee(QString);
+    void toggleParticipantListWindow();
 
 private:
     Ui::MainWindow *ui;
@@ -40,9 +42,12 @@ private:
     QStringList participants;
     QString myIP;
     WId addVideoToInterface();
+    QListWidget *participantListWidget;
+    QDialog *participantListWindow;
     void rescaleWindow();
     int getPortNumberForConnectionBetweenSlots(int, int);
     int mySlot();
+    int myTempSlot;
 
     //Participant methods
     void addParticipant(QString);
